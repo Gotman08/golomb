@@ -12,3 +12,13 @@ CMakeFiles/
 *.so
 *.dylib
 *.dll
+
+# MCP configuration (may contain sensitive tokens)
+.claude/mcp.json
+
+# Benchmark results
+benchmark_results.json
+benchmark_comparison.md
+
+# Node modules (if using MCP locally)
+node_modules/

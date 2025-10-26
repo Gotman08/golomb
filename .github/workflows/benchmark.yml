@@ -1,0 +1,132 @@
+name: Benchmarks
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache CPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/_deps
+            ~/.cache/CPM
+          key: ${{ runner.os }}-cpm-benchmark-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-cpm-benchmark-
+            ${{ runner.os }}-cpm-
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ python3
+
+      - name: Configure CMake (Release build for accurate benchmarks)
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_BENCHMARKS=ON
+
+      - name: Build benchmarks
+        run: cmake --build build --config Release --target golomb_benchmarks -j
+
+      - name: Run benchmarks
+        run: |
+          cd build
+          ./golomb_benchmarks --benchmark_format=json --benchmark_out=../benchmark_results.json
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: benchmark_results.json
+
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Setup benchmark history directory
+        run: |
+          mkdir -p gh-pages/benchmarks
+
+      - name: Compare with previous benchmarks
+        id: compare
+        run: |
+          if [ -f "gh-pages/benchmarks/latest.json" ]; then
+            echo "Comparing with previous results..."
+            python3 scripts/compare_benchmarks.py benchmark_results.json gh-pages/benchmarks/latest.json > benchmark_comparison.md
+            echo "comparison_available=true" >> $GITHUB_OUTPUT
+          else
+            echo "No previous results found, creating baseline..."
+            python3 scripts/compare_benchmarks.py benchmark_results.json > benchmark_comparison.md
+            echo "comparison_available=false" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
+      - name: Store benchmark results in history
+        if: github.ref == 'refs/heads/master'
+        run: |
+          # Copy current results as latest
+          cp benchmark_results.json gh-pages/benchmarks/latest.json
+
+          # Store with timestamp
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          COMMIT_SHA=$(git rev-parse --short HEAD)
+          cp benchmark_results.json "gh-pages/benchmarks/${TIMESTAMP}_${COMMIT_SHA}.json"
+
+          # Keep only last 50 benchmark files (cleanup old history)
+          cd gh-pages/benchmarks
+          ls -t *.json | grep -v latest.json | tail -n +51 | xargs -r rm --
+
+      - name: Commit benchmark history
+        if: github.ref == 'refs/heads/master'
+        run: |
+          cd gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add benchmarks/
+          git commit -m "chore: update benchmark history for ${{ github.sha }}" || echo "No changes to commit"
+          git push origin gh-pages
+
+      - name: Comment PR with benchmark results
+        if: github.event_name == 'pull_request' && steps.compare.outputs.comparison_available == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const comparison = fs.readFileSync('benchmark_comparison.md', 'utf8');
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comparison
+            });
+
+      - name: Upload comparison report
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-comparison
+          path: benchmark_comparison.md
+
+      - name: Check for performance regressions
+        run: |
+          if grep -q "REGRESSION" benchmark_comparison.md; then
+            echo "::warning::Performance regressions detected! See benchmark comparison report."
+            # Don't fail the build, just warn
+          fi

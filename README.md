@@ -2,7 +2,11 @@
 
 [![CI](https://github.com/Gotman08/golomb/actions/workflows/ci.yml/badge.svg)](https://github.com/Gotman08/golomb/actions/workflows/ci.yml)
 [![Documentation](https://github.com/Gotman08/golomb/actions/workflows/docs.yml/badge.svg)](https://github.com/Gotman08/golomb/actions/workflows/docs.yml)
+[![Benchmarks](https://github.com/Gotman08/golomb/actions/workflows/benchmark.yml/badge.svg)](https://github.com/Gotman08/golomb/actions/workflows/benchmark.yml)
+[![Release](https://github.com/Gotman08/golomb/actions/workflows/release.yml/badge.svg)](https://github.com/Gotman08/golomb/actions/workflows/release.yml)
+[![GitHub release](https://img.shields.io/github/v/release/Gotman08/golomb)](https://github.com/Gotman08/golomb/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 C++20 project for finding optimal Golomb rulers using multiple approaches: heuristics, MCTS, and exact methods.
 
@@ -111,6 +115,70 @@ Documentation is automatically updated on every push to the `master` branch.
 ```bash
 ./scripts/format.sh
 ```
+
+## Performance Benchmarks
+
+This project uses Google Benchmark for performance testing. Benchmarks run automatically on every push to master, comparing performance with previous commits to detect regressions.
+
+**View benchmark results:**
+- [Latest benchmark run](https://github.com/Gotman08/golomb/actions/workflows/benchmark.yml)
+- Historical benchmark data is stored in the `gh-pages` branch
+
+**Run benchmarks locally:**
+```bash
+./build/golomb_benchmarks
+```
+
+**Benchmark categories:**
+- Core operations (rule building, validation)
+- Greedy seed generation (various sizes)
+- Evolutionary algorithm (different population sizes and iterations)
+- MCTS (various iteration counts and exploration parameters)
+- Algorithm comparisons (Greedy vs Evolutionary vs MCTS)
+
+Performance regressions >10% will trigger warnings in pull requests.
+
+## Claude Code Integration (MCP)
+
+This project is configured with [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) servers for enhanced development with Claude Code in VS Code.
+
+**Configured MCP servers:**
+- **GitHub**: Manage issues, PRs, and workflows
+- **Git**: Advanced git operations (log, diff, blame)
+- **Filesystem**: Extended file system access
+- **Memory**: Persistent notes between Claude sessions
+
+**Setup instructions:** See [docs/MCP_GUIDE.md](docs/MCP_GUIDE.md)
+
+**Prerequisites:** Node.js 18+
+
+## Contributing
+
+We welcome contributions! This project uses [Conventional Commits](https://conventionalcommits.org/) for automated versioning and changelog generation.
+
+**Quick start:**
+1. Fork and clone the repository
+2. Create a feature branch: `git checkout -b feat/your-feature`
+3. Make your changes following our coding standards
+4. Use conventional commit messages (see below)
+5. Run tests and ensure they pass
+6. Submit a pull request
+
+**Commit message format:**
+```bash
+# Feature (minor version bump)
+git commit -m "feat(core): add parallel distance calculation"
+
+# Bug fix (patch version bump)
+git commit -m "fix(mcts): correct PUCT formula"
+
+# Breaking change (major version bump)
+git commit -m "feat!: redesign API
+
+BREAKING CHANGE: RuleState constructor signature changed"
+```
+
+**For detailed guidelines:** See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Future Work
 
