@@ -8,6 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Options
 option(BUILD_TESTING "Build tests" ON)
 option(BUILD_BENCHMARKS "Build benchmarks" ON)
+option(BUILD_EXAMPLES "Build examples" ON)
 
 # Include CPM for package management
 include(cmake/CPM.cmake)
@@ -89,4 +90,9 @@ endif()
 # Benchmarks
 if(BUILD_BENCHMARKS)
   add_subdirectory(benchmarks)
+endif()
+
+# Examples
+if(BUILD_EXAMPLES)
+  add_subdirectory(examples)
 endif()
