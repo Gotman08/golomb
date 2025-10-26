@@ -2,41 +2,86 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [master, develop]
   pull_request:
-    branches: [main]
+    branches: [master]
 
 jobs:
   build-and-test:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         build_type: [Debug, Release]
 
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Cache CPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/_deps
+            ~/.cache/CPM
+          key: ${{ runner.os }}-cpm-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-cpm-
+
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake g++ clang-format clang-tidy
+          sudo apt-get install -y cmake g++ clang-format clang-tidy cppcheck
+
+      - name: Install dependencies (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
 
       - name: Configure CMake
         run: |
-          cmake -S . -B build \
-            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
       - name: Build
-        run: cmake --build build -j
+        run: cmake --build build --config ${{ matrix.build_type }} -j
 
       - name: Run tests
-        run: ctest --test-dir build --output-on-failure
+        run: ctest --test-dir build --build-config ${{ matrix.build_type }} --output-on-failure
 
-      - name: Check format (Debug only)
-        if: matrix.build_type == 'Debug'
+      - name: Check format (Linux Debug only)
+        if: matrix.build_type == 'Debug' && runner.os == 'Linux'
         run: |
           find include src tests benchmarks -name "*.hpp" -o -name "*.cpp" | \
           xargs clang-format --dry-run --Werror
+
+      - name: Run clang-tidy (Linux Debug only)
+        if: matrix.build_type == 'Debug' && runner.os == 'Linux'
+        run: |
+          find src include -name "*.cpp" -o -name "*.hpp" | \
+          xargs clang-tidy -p build --warnings-as-errors=''
+
+      - name: Run cppcheck (Linux Debug only)
+        if: matrix.build_type == 'Debug' && runner.os == 'Linux'
+        run: |
+          cppcheck --enable=all --inconclusive --suppress=missingIncludeSystem \
+            --error-exitcode=0 --inline-suppr \
+            -I include src/ 2>&1 | tee cppcheck-report.txt
+
+      - name: Upload cppcheck report
+        if: matrix.build_type == 'Debug' && runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cppcheck-report
+          path: cppcheck-report.txt
+
+      - name: Upload executable (Release only)
+        if: matrix.build_type == 'Release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: golomb_cli-${{ runner.os }}
+          path: |
+            build/golomb_cli
+            build/Release/golomb_cli.exe
+            build/golomb_cli.exe
+          if-no-files-found: ignore

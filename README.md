@@ -1,5 +1,9 @@
 # Golomb Ruler Optimization
 
+[![CI](https://github.com/Gotman08/golomb/actions/workflows/ci.yml/badge.svg)](https://github.com/Gotman08/golomb/actions/workflows/ci.yml)
+[![Documentation](https://github.com/Gotman08/golomb/actions/workflows/docs.yml/badge.svg)](https://github.com/Gotman08/golomb/actions/workflows/docs.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 C++20 project for finding optimal Golomb rulers using multiple approaches: heuristics, MCTS, and exact methods.
 
 ## Overview
@@ -50,6 +54,14 @@ cmake --build build --config Release
 ctest --test-dir build -C Release
 ```
 
+## Pre-built Binaries
+
+Download pre-compiled binaries from the [latest successful CI run](https://github.com/Gotman08/golomb/actions/workflows/ci.yml):
+- **Linux**: `golomb_cli-Linux` artifact
+- **Windows**: `golomb_cli-Windows` artifact
+
+Extract the executable and run directly on your platform.
+
 ## Usage
 
 ```bash
@@ -76,6 +88,13 @@ cli/               - Command-line interface
 ```
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for detailed design documentation.
+
+## Documentation
+
+Full API documentation is automatically generated with Doxygen and deployed to GitHub Pages:
+- **[View Online Documentation](https://gotman08.github.io/golomb/)**
+
+Documentation is automatically updated on every push to the `master` branch.
 
 ## Testing
 

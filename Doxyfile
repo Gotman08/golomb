@@ -1,0 +1,44 @@
+# Doxyfile for Golomb Ruler Optimization Project
+
+PROJECT_NAME           = "Golomb Ruler Optimization"
+PROJECT_NUMBER         = 1.0.0
+PROJECT_BRIEF          = "C++20 Golomb ruler solver with heuristics, MCTS, and exact methods"
+
+OUTPUT_DIRECTORY       = docs/doxygen
+CREATE_SUBDIRS         = NO
+
+INPUT                  = include src README.md
+RECURSIVE              = YES
+FILE_PATTERNS          = *.hpp *.cpp *.md
+
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = YES
+
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+HTML_COLORSTYLE_HUE    = 220
+HTML_COLORSTYLE_SAT    = 100
+HTML_COLORSTYLE_GAMMA  = 80
+
+GENERATE_LATEX         = NO
+
+USE_MDFILE_AS_MAINPAGE = README.md
+
+JAVADOC_AUTOBRIEF      = YES
+QT_AUTOBRIEF           = YES
+
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+
+GENERATE_TREEVIEW      = YES
+DISABLE_INDEX          = NO
+FULL_SIDEBAR           = NO
+
+HAVE_DOT               = NO
