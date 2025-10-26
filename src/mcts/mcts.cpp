@@ -1,5 +1,6 @@
 #include "mcts/mcts.hpp"
 #include "utils/random.hpp"
+#include <algorithm>
 #include <cmath>
 #include <limits>
 
