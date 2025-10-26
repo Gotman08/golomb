@@ -10,6 +10,7 @@ add_executable(golomb_tests
   test_nn_tensor.cpp
   test_nn_activations.cpp
   test_nn_linear.cpp
+  test_nn_state_encoder.cpp
 )
 
 target_link_libraries(golomb_tests
