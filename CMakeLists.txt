@@ -50,7 +50,7 @@ target_link_libraries(golomb_heur PUBLIC golomb_core)
 add_library(golomb_mcts
   src/mcts/mcts.cpp
 )
-target_link_libraries(golomb_mcts PUBLIC golomb_core)
+target_link_libraries(golomb_mcts PUBLIC golomb_core golomb_nn)
 
 # Exact solver library (stub)
 add_library(golomb_exact
