@@ -64,6 +64,7 @@ add_library(golomb_nn
   src/nn/activations.cpp
   src/nn/linear.cpp
   src/nn/state_encoder.cpp
+  src/nn/golomb_net.cpp
 )
 target_link_libraries(golomb_nn PUBLIC golomb_core)
 
