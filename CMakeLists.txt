@@ -58,6 +58,13 @@ add_library(golomb_exact
 )
 target_link_libraries(golomb_exact PUBLIC golomb_core)
 
+# Neural network library
+add_library(golomb_nn
+  src/nn/tensor.cpp
+  src/nn/activations.cpp
+)
+target_link_libraries(golomb_nn PUBLIC golomb_core)
+
 # CLI executable
 add_executable(golomb_cli
   src/cli/main.cpp
