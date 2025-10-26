@@ -9,6 +9,7 @@ add_executable(golomb_tests
   test_golomb_core.cpp
   test_nn_tensor.cpp
   test_nn_activations.cpp
+  test_nn_linear.cpp
 )
 
 target_link_libraries(golomb_tests

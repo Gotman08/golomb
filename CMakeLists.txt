@@ -62,6 +62,7 @@ target_link_libraries(golomb_exact PUBLIC golomb_core)
 add_library(golomb_nn
   src/nn/tensor.cpp
   src/nn/activations.cpp
+  src/nn/linear.cpp
 )
 target_link_libraries(golomb_nn PUBLIC golomb_core)
 
