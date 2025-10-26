@@ -45,8 +45,7 @@ jobs:
 
       - name: Run benchmarks
         run: |
-          cd build
-          ./golomb_benchmarks --benchmark_format=json --benchmark_out=../benchmark_results.json
+          ./build/benchmarks/golomb_benchmarks --benchmark_format=json --benchmark_out=benchmark_results.json
 
       - name: Upload benchmark results
         uses: actions/upload-artifact@v4
