@@ -13,6 +13,7 @@ add_executable(golomb_benchmarks
 target_link_libraries(golomb_benchmarks
   PRIVATE
     golomb_core
+    golomb_nn
     golomb_heur
     golomb_mcts
     benchmark::benchmark
