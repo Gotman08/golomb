@@ -17,6 +17,11 @@ thread_local std::mt19937 rng{std::random_device{}()};
 // Constructors
 // ============================================================================
 
+Tensor::Tensor() : shape_({1}), data_(1, 0.0) {
+  // Default constructor creates a scalar tensor (1 element)
+  // This maintains valid state for member variables
+}
+
 Tensor::Tensor(const std::vector<size_t>& shape) : shape_(shape) {
   if (shape.empty()) {
     throw std::invalid_argument("Tensor shape cannot be empty");
