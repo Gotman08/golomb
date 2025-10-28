@@ -21,7 +21,7 @@ TEST_CASE("Tensor construction", "[nn][tensor]") {
   }
 
   SECTION("Tensor from shape vector") {
-    Tensor t({2, 3, 4});
+    Tensor t(std::vector<size_t>{2, 3, 4});
     REQUIRE(t.ndim() == 3);
     REQUIRE(t.shape()[0] == 2);
     REQUIRE(t.shape()[1] == 3);
@@ -61,7 +61,7 @@ TEST_CASE("Tensor element access", "[nn][tensor]") {
   }
 
   SECTION("3D access") {
-    Tensor t({2, 2, 2});
+    Tensor t(std::vector<size_t>{2, 2, 2});
     t(0, 0, 0) = 1.0;
     t(1, 1, 1) = 8.0;
     REQUIRE(t(0, 0, 0) == 1.0);
@@ -132,7 +132,7 @@ TEST_CASE("Tensor initialization", "[nn][tensor]") {
 
 TEST_CASE("Tensor reshape and transpose", "[nn][tensor]") {
   SECTION("Reshape") {
-    Tensor t({2, 3});
+    Tensor t(2, 3);
     t(0, 0) = 1.0;
     t(0, 1) = 2.0;
     t(0, 2) = 3.0;
