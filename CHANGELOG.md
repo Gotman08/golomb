@@ -5,6 +5,13 @@ All notable changes to the Golomb Ruler Optimization project will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3](https://github.com/Gotman08/golomb/compare/v1.1.2...v1.1.3) (2025-10-28)
+
+
+### Bug Fixes
+
+* **windows:** resolve MSVC compilation errors ([e9107ac](https://github.com/Gotman08/golomb/commit/e9107acde849ea79f1e2185960661003d92e9519))
+
 ## [1.1.2](https://github.com/Gotman08/golomb/compare/v1.1.1...v1.1.2) (2025-10-28)
 
 
