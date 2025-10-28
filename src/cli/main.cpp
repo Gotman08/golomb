@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
   } else if (args.mode == "exact") {
     std::cout << "run exact (timeout=" << args.timeout_ms << "ms)\n";
     ExactOptions opts{args.order, args.ub, args.timeout_ms};
-    ExactResult res = solve_exact_stub(opts);
+    ExactResult res = solve_exact_cpsat(opts);
     result = res.rule;
     std::cout << "exact result: " << res.message << "\n";
   } else {

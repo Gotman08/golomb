@@ -13,6 +13,21 @@ option(BUILD_EXAMPLES "Build examples" ON)
 # Include CPM for package management
 include(cmake/CPM.cmake)
 
+# Fetch OR-Tools for exact solving with CP-SAT
+CPMAddPackage(
+  NAME ortools
+  VERSION 9.10
+  GITHUB_REPOSITORY google/or-tools
+  OPTIONS
+    "BUILD_DEPS ON"
+    "BUILD_SAMPLES OFF"
+    "BUILD_EXAMPLES OFF"
+    "BUILD_PYTHON OFF"
+    "BUILD_JAVA OFF"
+    "BUILD_DOTNET OFF"
+    "BUILD_TESTING OFF"
+)
+
 # Strict warnings
 if(MSVC)
   add_compile_options(/W4 /WX)
@@ -53,11 +68,17 @@ add_library(golomb_mcts
 )
 target_link_libraries(golomb_mcts PUBLIC golomb_core golomb_nn)
 
-# Exact solver library (stub)
+# Exact solver library with CP-SAT
 add_library(golomb_exact
   src/exact/exact_stub.cpp
+  src/exact/exact_cpsat.cpp
 )
-target_link_libraries(golomb_exact PUBLIC golomb_core)
+target_link_libraries(golomb_exact
+  PUBLIC
+    golomb_core
+  PRIVATE
+    ortools::ortools
+)
 
 # Neural network library
 add_library(golomb_nn
