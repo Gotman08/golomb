@@ -237,9 +237,13 @@ TEST_CASE("Linear layer zero_grad", "[nn][linear]") {
   layer.zero_grad();
 
   // All gradients should be zero
-  for (size_t i = 0; i < 2; ++i) {
-    for (size_t j = 0; j < 3; ++j) {
-      REQUIRE((*grad_w)(i, j) == 0.0);
+  {
+    auto grads = layer.gradients();
+    auto* grad_w = grads[0];
+    for (size_t i = 0; i < 2; ++i) {
+      for (size_t j = 0; j < 3; ++j) {
+        REQUIRE((*grad_w)(i, j) == 0.0);
+      }
     }
   }
 }
