@@ -16,6 +16,7 @@
 #include <iostream>
 #include <iomanip>
 #include <chrono>
+#include <cmath>
 
 using namespace golomb;
 using namespace golomb::nn;
