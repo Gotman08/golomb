@@ -13,20 +13,31 @@ option(BUILD_EXAMPLES "Build examples" ON)
 # Include CPM for package management
 include(cmake/CPM.cmake)
 
-# Fetch OR-Tools for exact solving with CP-SAT
-CPMAddPackage(
-  NAME ortools
-  VERSION 9.10
-  GITHUB_REPOSITORY google/or-tools
-  OPTIONS
-    "BUILD_DEPS ON"
-    "BUILD_SAMPLES OFF"
-    "BUILD_EXAMPLES OFF"
-    "BUILD_PYTHON OFF"
-    "BUILD_JAVA OFF"
-    "BUILD_DOTNET OFF"
-    "BUILD_TESTING OFF"
-)
+# OR-Tools integration: prefer system install, fallback to CPM
+# Try to find OR-Tools installed on system (from apt, vcpkg, etc.)
+find_package(ortools CONFIG QUIET)
+
+if(NOT ortools_FOUND)
+  message(STATUS "OR-Tools not found on system, will use CPM to build from source")
+  message(WARNING "Building OR-Tools from source takes 20-30 minutes. Consider installing via package manager.")
+
+  # Fallback: Fetch OR-Tools via CPM (slow first build)
+  CPMAddPackage(
+    NAME ortools
+    VERSION 9.10
+    GITHUB_REPOSITORY google/or-tools
+    OPTIONS
+      "BUILD_DEPS ON"
+      "BUILD_SAMPLES OFF"
+      "BUILD_EXAMPLES OFF"
+      "BUILD_PYTHON OFF"
+      "BUILD_JAVA OFF"
+      "BUILD_DOTNET OFF"
+      "BUILD_TESTING OFF"
+  )
+else()
+  message(STATUS "Using system OR-Tools: ${ortools_DIR}")
+endif()
 
 # Strict warnings
 if(MSVC)

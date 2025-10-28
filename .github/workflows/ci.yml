@@ -34,10 +34,38 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y cmake g++ clang-format clang-tidy cppcheck
 
+      - name: Install OR-Tools (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          # Download OR-Tools binary release for Ubuntu
+          ORTOOLS_VERSION="9.10"
+          ORTOOLS_URL="https://github.com/google/or-tools/releases/download/v${ORTOOLS_VERSION}/or-tools_amd64_ubuntu-24.04_cpp_v${ORTOOLS_VERSION}.tar.gz"
+
+          wget -q "${ORTOOLS_URL}" -O ortools.tar.gz
+          sudo mkdir -p /opt/or-tools
+          sudo tar -xzf ortools.tar.gz -C /opt/or-tools --strip-components=1
+
+          # Add to CMAKE_PREFIX_PATH
+          echo "CMAKE_PREFIX_PATH=/opt/or-tools:${CMAKE_PREFIX_PATH}" >> $GITHUB_ENV
+
       - name: Install dependencies (Windows)
         if: runner.os == 'Windows'
         run: |
           choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
+
+      - name: Install OR-Tools (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          # Download OR-Tools binary release for Windows
+          $ORTOOLS_VERSION = "9.10"
+          $ORTOOLS_URL = "https://github.com/google/or-tools/releases/download/v$ORTOOLS_VERSION/or-tools_x64_windows_v$ORTOOLS_VERSION.zip"
+
+          Invoke-WebRequest -Uri $ORTOOLS_URL -OutFile ortools.zip
+          Expand-Archive -Path ortools.zip -DestinationPath C:\ortools
+
+          # Add to CMAKE_PREFIX_PATH
+          echo "CMAKE_PREFIX_PATH=C:\ortools" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        shell: pwsh
 
       - name: Configure CMake
         run: |
