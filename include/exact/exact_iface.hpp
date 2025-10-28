@@ -9,20 +9,20 @@ namespace golomb {
  * @brief Options for exact solver.
  */
 struct ExactOptions {
-  int n;               ///< Number of marks to place.
-  int ub;              ///< Upper bound for mark positions.
-  int timeout_ms;      ///< Maximum solving time in milliseconds.
+  int n;          ///< Number of marks to place.
+  int ub;         ///< Upper bound for mark positions.
+  int timeout_ms; ///< Maximum solving time in milliseconds.
 };
 
 /**
  * @brief Result from exact solver.
  */
 struct ExactResult {
-  bool optimal;             ///< Whether optimal solution was found.
-  std::vector<int> rule;    ///< Best ruler found.
-  int lb;                   ///< Lower bound on optimal length.
-  int ub;                   ///< Upper bound on optimal length.
-  std::string message;      ///< Solver status message.
+  bool optimal;          ///< Whether optimal solution was found.
+  std::vector<int> rule; ///< Best ruler found.
+  int lb;                ///< Lower bound on optimal length.
+  int ub;                ///< Upper bound on optimal length.
+  std::string message;   ///< Solver status message.
 };
 
 /**
@@ -40,4 +40,4 @@ struct ExactResult {
  */
 ExactResult solve_exact_stub(const ExactOptions& opts);
 
-}  // namespace golomb
+} // namespace golomb

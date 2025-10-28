@@ -9,14 +9,14 @@
  * 4. Comparer MCTS avec et sans réseau
  */
 
+#include "core/golomb.hpp"
+#include "mcts/mcts.hpp"
 #include "nn/golomb_net.hpp"
 #include "nn/state_encoder.hpp"
-#include "mcts/mcts.hpp"
-#include "core/golomb.hpp"
-#include <iostream>
-#include <iomanip>
 #include <chrono>
 #include <cmath>
+#include <iomanip>
+#include <iostream>
 
 using namespace golomb;
 using namespace golomb::nn;
@@ -46,7 +46,8 @@ void demo_state_encoding() {
 
   std::cout << "Example state: {";
   for (size_t i = 0; i < state.marks.size(); ++i) {
-    if (i > 0) std::cout << ", ";
+    if (i > 0)
+      std::cout << ", ";
     std::cout << state.marks[i];
   }
   std::cout << "}\n";
@@ -99,9 +100,8 @@ void demo_network_inference() {
             [](const auto& a, const auto& b) { return a.second > b.second; });
 
   for (int i = 0; i < 5 && i < static_cast<int>(policy_probs.size()); ++i) {
-    std::cout << "    Position " << std::setw(3) << policy_probs[i].first
-              << ": " << std::setw(8) << std::fixed << std::setprecision(6)
-              << policy_probs[i].second << "\n";
+    std::cout << "    Position " << std::setw(3) << policy_probs[i].first << ": " << std::setw(8)
+              << std::fixed << std::setprecision(6) << policy_probs[i].second << "\n";
   }
 }
 
@@ -110,7 +110,7 @@ void demo_mcts_comparison() {
 
   int n = 6;
   int ub = 50;
-  int iters = 100;  // Peu d'itérations pour le test
+  int iters = 100; // Peu d'itérations pour le test
 
   std::cout << "Problem: Find Golomb ruler with " << n << " marks, ub=" << ub << "\n";
   std::cout << "MCTS iterations: " << iters << "\n\n";
@@ -124,7 +124,8 @@ void demo_mcts_comparison() {
   std::cout << "Result WITHOUT neural network:\n";
   std::cout << "  Ruler: {";
   for (size_t i = 0; i < result_no_nn.size(); ++i) {
-    if (i > 0) std::cout << ", ";
+    if (i > 0)
+      std::cout << ", ";
     std::cout << result_no_nn[i];
   }
   std::cout << "}\n";
@@ -144,7 +145,8 @@ void demo_mcts_comparison() {
   std::cout << "Result WITH neural network (untrained):\n";
   std::cout << "  Ruler: {";
   for (size_t i = 0; i < result_with_nn.size(); ++i) {
-    if (i > 0) std::cout << ", ";
+    if (i > 0)
+      std::cout << ", ";
     std::cout << result_with_nn[i];
   }
   std::cout << "}\n";
@@ -177,15 +179,15 @@ void demo_gradient_flow() {
 
   std::cout << "Forward pass:\n";
   std::cout << "  Predicted value: " << value << "\n";
-  std::cout << "  Policy entropy: " << std::fixed << std::setprecision(4)
-            << (-policy.sum()) << "\n\n";
+  std::cout << "  Policy entropy: " << std::fixed << std::setprecision(4) << (-policy.sum())
+            << "\n\n";
 
   // Create dummy gradients
   Tensor grad_policy(ub + 1);
   grad_policy.zeros();
-  grad_policy(10) = 1.0;  // Encourage position 10
+  grad_policy(10) = 1.0; // Encourage position 10
 
-  double grad_value = 1.0;  // Encourage higher value
+  double grad_value = 1.0; // Encourage higher value
 
   net.zero_grad();
   net.backward(grad_policy, grad_value);
@@ -203,8 +205,8 @@ void demo_gradient_flow() {
   }
   total_grad_norm = std::sqrt(total_grad_norm);
 
-  std::cout << "Total gradient norm: " << std::scientific << std::setprecision(3)
-            << total_grad_norm << "\n";
+  std::cout << "Total gradient norm: " << std::scientific << std::setprecision(3) << total_grad_norm
+            << "\n";
   std::cout << "\nGradient flow is working! Ready for training.\n";
 }
 

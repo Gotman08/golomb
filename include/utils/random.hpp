@@ -36,4 +36,4 @@ private:
   std::mt19937_64 engine_;
 };
 
-}  // namespace golomb
+} // namespace golomb

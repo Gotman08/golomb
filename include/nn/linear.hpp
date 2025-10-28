@@ -122,19 +122,19 @@ public:
   [[nodiscard]] bool has_bias() const { return use_bias_; }
 
 private:
-  size_t in_features_;   ///< Input dimension.
-  size_t out_features_;  ///< Output dimension.
-  bool use_bias_;        ///< Whether to use bias.
+  size_t in_features_;  ///< Input dimension.
+  size_t out_features_; ///< Output dimension.
+  bool use_bias_;       ///< Whether to use bias.
 
-  Tensor weight_;        ///< Weight matrix [out_features, in_features].
-  Tensor bias_;          ///< Bias vector [out_features] (optional).
+  Tensor weight_; ///< Weight matrix [out_features, in_features].
+  Tensor bias_;   ///< Bias vector [out_features] (optional).
 
-  Tensor grad_weight_;   ///< Gradient w.r.t. weight.
-  Tensor grad_bias_;     ///< Gradient w.r.t. bias (optional).
+  Tensor grad_weight_; ///< Gradient w.r.t. weight.
+  Tensor grad_bias_;   ///< Gradient w.r.t. bias (optional).
 
   // Cached for backward pass
-  std::optional<Tensor> cached_input_;  ///< Cached input from forward pass.
+  std::optional<Tensor> cached_input_; ///< Cached input from forward pass.
 };
 
-}  // namespace nn
-}  // namespace golomb
+} // namespace nn
+} // namespace golomb

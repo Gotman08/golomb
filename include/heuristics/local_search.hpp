@@ -18,4 +18,4 @@ namespace golomb {
  */
 std::vector<int> hill_climb(const std::vector<int>& start, int ub, int budget);
 
-}  // namespace golomb
+} // namespace golomb

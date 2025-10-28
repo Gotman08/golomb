@@ -1,7 +1,7 @@
 #include "nn/tensor.hpp"
 #include <algorithm>
-#include <numeric>
 #include <cmath>
+#include <numeric>
 #include <random>
 #include <sstream>
 
@@ -11,7 +11,7 @@ namespace nn {
 namespace {
 // Thread-local RNG for random initialization
 thread_local std::mt19937 rng{std::random_device{}()};
-}  // namespace
+} // namespace
 
 // ============================================================================
 // Constructors
@@ -26,8 +26,8 @@ Tensor::Tensor(const std::vector<size_t>& shape) : shape_(shape) {
   if (shape.empty()) {
     throw std::invalid_argument("Tensor shape cannot be empty");
   }
-  size_t total_size = std::accumulate(shape.begin(), shape.end(), size_t{1},
-                                       std::multiplies<size_t>());
+  size_t total_size =
+      std::accumulate(shape.begin(), shape.end(), size_t{1}, std::multiplies<size_t>());
   data_.resize(total_size, 0.0);
 }
 
@@ -142,8 +142,8 @@ void Tensor::random_normal(double mean, double stddev) {
 // ============================================================================
 
 void Tensor::reshape(const std::vector<size_t>& new_shape) {
-  size_t new_size = std::accumulate(new_shape.begin(), new_shape.end(), size_t{1},
-                                     std::multiplies<size_t>());
+  size_t new_size =
+      std::accumulate(new_shape.begin(), new_shape.end(), size_t{1}, std::multiplies<size_t>());
   if (new_size != size()) {
     throw std::invalid_argument("Reshape: total size must be preserved");
   }
@@ -177,12 +177,14 @@ void Tensor::check_same_shape(const Tensor& other) const {
     std::ostringstream oss;
     oss << "Shape mismatch: (";
     for (size_t i = 0; i < shape_.size(); ++i) {
-      if (i > 0) oss << ", ";
+      if (i > 0)
+        oss << ", ";
       oss << shape_[i];
     }
     oss << ") vs (";
     for (size_t i = 0; i < other.shape_.size(); ++i) {
-      if (i > 0) oss << ", ";
+      if (i > 0)
+        oss << ", ";
       oss << other.shape_[i];
     }
     oss << ")";
@@ -268,9 +270,9 @@ Tensor Tensor::matmul(const Tensor& other) const {
     throw std::runtime_error("Matrix multiplication requires 2D tensors");
   }
 
-  size_t m = shape_[0];  // rows of this
-  size_t n = shape_[1];  // cols of this / rows of other
-  size_t p = other.shape_[1];  // cols of other
+  size_t m = shape_[0];       // rows of this
+  size_t n = shape_[1];       // cols of this / rows of other
+  size_t p = other.shape_[1]; // cols of other
 
   if (n != other.shape_[0]) {
     throw std::invalid_argument("Matrix multiplication: incompatible dimensions");
@@ -380,5 +382,5 @@ Tensor operator*(double scalar, const Tensor& tensor) {
   return tensor * scalar;
 }
 
-}  // namespace nn
-}  // namespace golomb
+} // namespace nn
+} // namespace golomb

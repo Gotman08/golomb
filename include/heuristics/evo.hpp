@@ -19,4 +19,4 @@ namespace golomb {
  */
 std::vector<int> evolutionary_search(int n, int ub, int pop = 64, int iters = 1000);
 
-}  // namespace golomb
+} // namespace golomb

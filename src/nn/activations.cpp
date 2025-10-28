@@ -1,6 +1,6 @@
 #include "nn/activations.hpp"
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 #include <limits>
 
 namespace golomb {
@@ -207,8 +207,9 @@ Tensor softmax_backward(const Tensor& grad_output, const Tensor& output) {
     size_t n = output.size();
     Tensor grad_input(n);
 
-    // For softmax, gradient is: grad_input[i] = sum_j (output[i] * (delta_ij - output[j]) * grad_output[j])
-    // Simplified: grad_input[i] = output[i] * (grad_output[i] - sum_j(output[j] * grad_output[j]))
+    // For softmax, gradient is: grad_input[i] = sum_j (output[i] * (delta_ij - output[j]) *
+    // grad_output[j]) Simplified: grad_input[i] = output[i] * (grad_output[i] - sum_j(output[j] *
+    // grad_output[j]))
     double sum = 0.0;
     for (size_t j = 0; j < n; ++j) {
       sum += output(j) * grad_output(j);
@@ -357,5 +358,5 @@ Tensor log_softmax_backward(const Tensor& grad_output, const Tensor& output) {
   }
 }
 
-}  // namespace nn
-}  // namespace golomb
+} // namespace nn
+} // namespace golomb

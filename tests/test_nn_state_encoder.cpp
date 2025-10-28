@@ -1,7 +1,7 @@
+#include "core/golomb.hpp"
+#include "nn/state_encoder.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
-#include "nn/state_encoder.hpp"
-#include "core/golomb.hpp"
 
 using namespace golomb;
 using namespace golomb::nn;
@@ -51,7 +51,7 @@ TEST_CASE("StateEncoder encode positions", "[nn][state_encoder]") {
 
   auto encoded = encoder.encode(state);
 
-  REQUIRE(encoded.size() == 11);  // positions 0 to 10
+  REQUIRE(encoded.size() == 11); // positions 0 to 10
 
   // Check that positions 0, 2, 5 are marked
   REQUIRE(encoded(0) == 1.0);
@@ -70,11 +70,11 @@ TEST_CASE("StateEncoder encode distances", "[nn][state_encoder]") {
   StateEncoder encoder(ub, 5, StateEncoder::DISTANCES);
 
   RuleState state(ub);
-  state.marks = {0, 2, 5};  // Distances: 2 (0-2), 5 (0-5), 3 (2-5)
+  state.marks = {0, 2, 5}; // Distances: 2 (0-2), 5 (0-5), 3 (2-5)
 
   auto encoded = encoder.encode(state);
 
-  REQUIRE(encoded.size() == 11);  // distances 0 to 10
+  REQUIRE(encoded.size() == 11); // distances 0 to 10
 
   // Check that distances 2, 3, 5 are marked
   REQUIRE(encoded(2) == 1.0);
@@ -95,7 +95,7 @@ TEST_CASE("StateEncoder encode metadata", "[nn][state_encoder]") {
 
   SECTION("Empty state") {
     RuleState state(ub);
-    state.marks = {0};  // Just the origin
+    state.marks = {0}; // Just the origin
 
     auto encoded = encoder.encode(state);
 
@@ -116,7 +116,7 @@ TEST_CASE("StateEncoder encode metadata", "[nn][state_encoder]") {
 
   SECTION("Partial state") {
     RuleState state(ub);
-    state.marks = {0, 10, 25, 40};  // 4 marks, length 40
+    state.marks = {0, 10, 25, 40}; // 4 marks, length 40
 
     auto encoded = encoder.encode(state);
 
@@ -135,7 +135,7 @@ TEST_CASE("StateEncoder encode metadata", "[nn][state_encoder]") {
 
   SECTION("Complete state") {
     RuleState state(ub);
-    state.marks = {0, 10, 20, 30, 40, 50, 60, 80};  // 8 marks, length 80
+    state.marks = {0, 10, 20, 30, 40, 50, 60, 80}; // 8 marks, length 80
 
     auto encoded = encoder.encode(state);
 
@@ -156,7 +156,7 @@ TEST_CASE("StateEncoder encode metadata", "[nn][state_encoder]") {
 TEST_CASE("StateEncoder full encoding", "[nn][state_encoder]") {
   int ub = 10;
   int target_marks = 4;
-  StateEncoder encoder(ub, target_marks);  // Default: all features
+  StateEncoder encoder(ub, target_marks); // Default: all features
 
   RuleState state(ub);
   state.marks = {0, 2, 5};
@@ -167,20 +167,20 @@ TEST_CASE("StateEncoder full encoding", "[nn][state_encoder]") {
   REQUIRE(encoded.size() == 26);
 
   // Verify positions section (first 11 elements)
-  REQUIRE(encoded(0) == 1.0);  // Position 0
-  REQUIRE(encoded(2) == 1.0);  // Position 2
-  REQUIRE(encoded(5) == 1.0);  // Position 5
+  REQUIRE(encoded(0) == 1.0); // Position 0
+  REQUIRE(encoded(2) == 1.0); // Position 2
+  REQUIRE(encoded(5) == 1.0); // Position 5
 
   // Verify distances section (next 11 elements, offset 11)
-  REQUIRE(encoded(11 + 2) == 1.0);  // Distance 2
-  REQUIRE(encoded(11 + 3) == 1.0);  // Distance 3
-  REQUIRE(encoded(11 + 5) == 1.0);  // Distance 5
+  REQUIRE(encoded(11 + 2) == 1.0); // Distance 2
+  REQUIRE(encoded(11 + 3) == 1.0); // Distance 3
+  REQUIRE(encoded(11 + 5) == 1.0); // Distance 5
 
   // Verify metadata section (last 4 elements, offset 22)
   // num_marks = 3, target_marks = 4, length = 5, ub = 10
-  double expected_progress = 3.0 / 4.0;  // 0.75
-  double expected_length_norm = 5.0 / 10.0;  // 0.5
-  double expected_density = 3.0 / 5.0;  // 0.6
+  double expected_progress = 3.0 / 4.0;     // 0.75
+  double expected_length_norm = 5.0 / 10.0; // 0.5
+  double expected_density = 3.0 / 5.0;      // 0.6
 
   REQUIRE_THAT(encoded(22), Catch::Matchers::WithinAbs(expected_progress, 1e-6));
   REQUIRE_THAT(encoded(23), Catch::Matchers::WithinAbs(expected_length_norm, 1e-6));

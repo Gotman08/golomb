@@ -1,7 +1,7 @@
 #pragma once
 
-#include "nn/tensor.hpp"
 #include "core/golomb.hpp"
+#include "nn/tensor.hpp"
 #include <vector>
 
 namespace golomb {
@@ -25,10 +25,10 @@ public:
    * @brief Encoding strategies (can be combined with bitwise OR).
    */
   enum EncodingType {
-    POSITIONS = 1 << 0,   ///< Binary vector of mark positions [0, ub].
-    DISTANCES = 1 << 1,   ///< Binary vector of used distances [0, max_dist].
-    METADATA = 1 << 2,    ///< Normalized metadata (num_marks, length, progress).
-    DEFAULT = POSITIONS | DISTANCES | METADATA  ///< All encodings combined.
+    POSITIONS = 1 << 0, ///< Binary vector of mark positions [0, ub].
+    DISTANCES = 1 << 1, ///< Binary vector of used distances [0, max_dist].
+    METADATA = 1 << 2,  ///< Normalized metadata (num_marks, length, progress).
+    DEFAULT = POSITIONS | DISTANCES | METADATA ///< All encodings combined.
   };
 
   /**
@@ -68,10 +68,10 @@ public:
   [[nodiscard]] int target_marks() const { return target_marks_; }
 
 private:
-  int ub_;              ///< Upper bound for positions.
-  int target_marks_;    ///< Target number of marks.
-  int encoding_type_;   ///< Combination of EncodingType flags.
-  size_t encoding_size_;  ///< Total size of encoding.
+  int ub_;               ///< Upper bound for positions.
+  int target_marks_;     ///< Target number of marks.
+  int encoding_type_;    ///< Combination of EncodingType flags.
+  size_t encoding_size_; ///< Total size of encoding.
 
   /**
    * @brief Encode mark positions as binary vector.
@@ -104,5 +104,5 @@ private:
   size_t compute_encoding_size() const;
 };
 
-}  // namespace nn
-}  // namespace golomb
+} // namespace nn
+} // namespace golomb

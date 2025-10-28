@@ -30,9 +30,13 @@ bool DistBitset::test(int d) const {
   return (bits_[word_idx] & (1ULL << bit_idx)) != 0;
 }
 
-void DistBitset::clear() { std::fill(bits_.begin(), bits_.end(), 0); }
+void DistBitset::clear() {
+  std::fill(bits_.begin(), bits_.end(), 0);
+}
 
-int DistBitset::size() const { return max_dist_; }
+int DistBitset::size() const {
+  return max_dist_;
+}
 
 bool DistBitset::can_add_mark(const std::vector<int>& marks, int p) const {
   for (int m : marks) {
@@ -56,4 +60,4 @@ void DistBitset::add_mark(std::vector<int>& marks, int p) {
   marks.insert(it, p);
 }
 
-}  // namespace golomb
+} // namespace golomb

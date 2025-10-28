@@ -1,6 +1,6 @@
-#include <catch2/catch_test_macros.hpp>
 #include "core/bitset_dist.hpp"
 #include "core/golomb.hpp"
+#include <catch2/catch_test_macros.hpp>
 
 using namespace golomb;
 
@@ -35,8 +35,8 @@ TEST_CASE("DistBitset basic operations", "[bitset]") {
     bs.set(2);
     bs.set(3);
 
-    REQUIRE_FALSE(bs.can_add_mark(marks, 4));  // Would create distance 1 (4-3)
-    REQUIRE(bs.can_add_mark(marks, 7));        // New distances: 7, 6, 4 (all new)
+    REQUIRE_FALSE(bs.can_add_mark(marks, 4)); // Would create distance 1 (4-3)
+    REQUIRE(bs.can_add_mark(marks, 7));       // New distances: 7, 6, 4 (all new)
   }
 
   SECTION("add_mark") {
@@ -46,8 +46,8 @@ TEST_CASE("DistBitset basic operations", "[bitset]") {
     bs.add_mark(marks, 4);
     REQUIRE(marks.size() == 3);
     REQUIRE(marks[2] == 4);
-    REQUIRE(bs.test(3));  // Distance 4-1
-    REQUIRE(bs.test(4));  // Distance 4-0
+    REQUIRE(bs.test(3)); // Distance 4-1
+    REQUIRE(bs.test(4)); // Distance 4-0
   }
 }
 
@@ -59,11 +59,13 @@ TEST_CASE("Golomb ruler validation", "[golomb]") {
   }
 
   SECTION("invalid rulers") {
-    REQUIRE_FALSE(is_valid_rule({0, 1, 2, 3}));  // Multiple distance 1
-    REQUIRE_FALSE(is_valid_rule({0, 2, 4, 6}));  // All distance 2
+    REQUIRE_FALSE(is_valid_rule({0, 1, 2, 3})); // Multiple distance 1
+    REQUIRE_FALSE(is_valid_rule({0, 2, 4, 6})); // All distance 2
   }
 
-  SECTION("empty ruler") { REQUIRE(is_valid_rule({})); }
+  SECTION("empty ruler") {
+    REQUIRE(is_valid_rule({}));
+  }
 }
 
 TEST_CASE("Ruler length", "[golomb]") {

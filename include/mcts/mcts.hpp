@@ -18,12 +18,12 @@ class GolombNet;
  * Each node tracks visit count (N), total value (W), and prior probabilities (P).
  */
 struct MCTSNode {
-  RuleState state;                                        ///< Current partial ruler state.
-  std::unordered_map<int, std::unique_ptr<MCTSNode>> children;  ///< Child nodes by action.
-  int N = 0;                                              ///< Visit count.
-  double W = 0.0;                                         ///< Total value accumulated.
-  std::unordered_map<int, double> P;                     ///< Prior probabilities per action.
-  bool is_terminal = false;                               ///< Whether state is complete/dead-end.
+  RuleState state;                                             ///< Current partial ruler state.
+  std::unordered_map<int, std::unique_ptr<MCTSNode>> children; ///< Child nodes by action.
+  int N = 0;                                                   ///< Visit count.
+  double W = 0.0;                                              ///< Total value accumulated.
+  std::unordered_map<int, double> P;                           ///< Prior probabilities per action.
+  bool is_terminal = false; ///< Whether state is complete/dead-end.
 
   explicit MCTSNode(int max_dist) : state(max_dist) {}
 };
@@ -64,6 +64,6 @@ std::vector<int> mcts_build(int n, int ub, int iters, double c_puct = 1.4);
  * @return Best ruler found (sorted marks).
  */
 std::vector<int> mcts_build_nn(int n, int ub, int iters, nn::GolombNet* network,
-                                double c_puct = 1.4);
+                               double c_puct = 1.4);
 
-}  // namespace golomb
+} // namespace golomb

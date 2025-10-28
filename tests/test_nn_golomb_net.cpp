@@ -1,7 +1,7 @@
+#include "core/golomb.hpp"
+#include "nn/golomb_net.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
-#include "nn/golomb_net.hpp"
-#include "core/golomb.hpp"
 
 using namespace golomb;
 using namespace golomb::nn;
@@ -61,7 +61,7 @@ TEST_CASE("GolombNet different states produce different outputs", "[nn][golomb_n
   state1.marks = {0, 5, 12};
 
   RuleState state2(ub);
-  state2.marks = {0, 5, 15};  // Different state
+  state2.marks = {0, 5, 15}; // Different state
 
   Tensor policy1, policy2;
   double value1, value2;
@@ -120,7 +120,7 @@ TEST_CASE("GolombNet backward pass runs without error", "[nn][golomb_net]") {
   // Create dummy gradients
   Tensor grad_policy(ub + 1);
   grad_policy.zeros();
-  grad_policy(5) = 1.0;  // Gradient for position 5
+  grad_policy(5) = 1.0; // Gradient for position 5
 
   double grad_value = 1.0;
 
@@ -186,10 +186,8 @@ TEST_CASE("GolombNet parameter count", "[nn][golomb_net]") {
   // policy_head: (h2 * output_policy_size) + output_policy_size
   // value_head: (h2 * 1) + 1
 
-  size_t expected = (input_size * h1 + h1) +
-                    (h1 * h2 + h2) +
-                    (h2 * output_policy_size + output_policy_size) +
-                    (h2 * 1 + 1);
+  size_t expected = (input_size * h1 + h1) + (h1 * h2 + h2) +
+                    (h2 * output_policy_size + output_policy_size) + (h2 * 1 + 1);
 
   REQUIRE(net.num_parameters() == expected);
 }

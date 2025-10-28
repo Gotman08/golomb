@@ -1,6 +1,6 @@
+#include "nn/linear.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
-#include "nn/linear.hpp"
 
 using namespace golomb::nn;
 
@@ -61,8 +61,12 @@ TEST_CASE("Linear layer forward pass 2D batch", "[nn][linear]") {
   layer.bias().zeros();
 
   Tensor input(2, 3);
-  input(0, 0) = 1.0; input(0, 1) = 2.0; input(0, 2) = 3.0;
-  input(1, 0) = 4.0; input(1, 1) = 5.0; input(1, 2) = 6.0;
+  input(0, 0) = 1.0;
+  input(0, 1) = 2.0;
+  input(0, 2) = 3.0;
+  input(1, 0) = 4.0;
+  input(1, 1) = 5.0;
+  input(1, 2) = 6.0;
 
   auto output = layer.forward(input);
 
@@ -128,8 +132,12 @@ TEST_CASE("Linear layer backward pass 2D batch", "[nn][linear]") {
   layer.bias().zeros();
 
   Tensor input(2, 3);
-  input(0, 0) = 1.0; input(0, 1) = 2.0; input(0, 2) = 3.0;
-  input(1, 0) = 4.0; input(1, 1) = 5.0; input(1, 2) = 6.0;
+  input(0, 0) = 1.0;
+  input(0, 1) = 2.0;
+  input(0, 2) = 3.0;
+  input(1, 0) = 4.0;
+  input(1, 1) = 5.0;
+  input(1, 2) = 6.0;
 
   auto output = layer.forward(input);
 
@@ -177,7 +185,7 @@ TEST_CASE("Linear layer gradient checking", "[nn][linear]") {
   // Assume simple loss: L = sum(output^2) / 2
   Tensor grad_output(3);
   for (size_t i = 0; i < 3; ++i) {
-    grad_output(i) = output(i);  // dL/dy = y
+    grad_output(i) = output(i); // dL/dy = y
   }
 
   // Analytical gradient

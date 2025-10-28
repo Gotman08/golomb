@@ -20,6 +20,8 @@ double RNG::uniform_real() {
   return dist(engine_);
 }
 
-std::mt19937_64& RNG::engine() { return engine_; }
+std::mt19937_64& RNG::engine() {
+  return engine_;
+}
 
-}  // namespace golomb
+} // namespace golomb

@@ -1,5 +1,5 @@
-#include "exact/exact_iface.hpp"
 #include "core/golomb.hpp"
+#include "exact/exact_iface.hpp"
 
 namespace golomb {
 
@@ -17,4 +17,4 @@ ExactResult solve_exact_stub(const ExactOptions& opts) {
   return result;
 }
 
-}  // namespace golomb
+} // namespace golomb

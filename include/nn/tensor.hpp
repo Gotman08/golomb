@@ -1,9 +1,9 @@
 #pragma once
 
-#include <vector>
+#include <cstddef>
 #include <initializer_list>
 #include <stdexcept>
-#include <cstddef>
+#include <vector>
 
 namespace golomb {
 namespace nn {
@@ -322,8 +322,8 @@ public:
   static Tensor he(size_t rows, size_t cols);
 
 private:
-  std::vector<double> data_;    ///< Flattened data storage.
-  std::vector<size_t> shape_;   ///< Dimensions.
+  std::vector<double> data_;  ///< Flattened data storage.
+  std::vector<size_t> shape_; ///< Dimensions.
 
   /**
    * @brief Compute flat index from multi-dimensional indices.
@@ -345,5 +345,5 @@ private:
  */
 [[nodiscard]] Tensor operator*(double scalar, const Tensor& tensor);
 
-}  // namespace nn
-}  // namespace golomb
+} // namespace nn
+} // namespace golomb

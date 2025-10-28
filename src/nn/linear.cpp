@@ -5,13 +5,9 @@ namespace golomb {
 namespace nn {
 
 Linear::Linear(size_t in_features, size_t out_features, bool use_bias)
-    : in_features_(in_features),
-      out_features_(out_features),
-      use_bias_(use_bias),
-      weight_(out_features, in_features),
-      bias_(out_features),
-      grad_weight_(out_features, in_features),
-      grad_bias_(out_features) {
+    : in_features_(in_features), out_features_(out_features), use_bias_(use_bias),
+      weight_(out_features, in_features), bias_(out_features),
+      grad_weight_(out_features, in_features), grad_bias_(out_features) {
 
   // Initialize with He by default (good for ReLU networks)
   init_he();
@@ -231,5 +227,5 @@ Tensor& Linear::bias() {
   return bias_;
 }
 
-}  // namespace nn
-}  // namespace golomb
+} // namespace nn
+} // namespace golomb

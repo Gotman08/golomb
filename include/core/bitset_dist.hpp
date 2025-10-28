@@ -63,4 +63,4 @@ private:
   int max_dist_;
 };
 
-}  // namespace golomb
+} // namespace golomb

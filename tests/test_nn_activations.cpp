@@ -1,6 +1,6 @@
+#include "nn/activations.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
-#include "nn/activations.hpp"
 #include <cmath>
 
 using namespace golomb::nn;
@@ -22,11 +22,11 @@ TEST_CASE("ReLU activation", "[nn][activations]") {
     Tensor grad_out{1.0, 1.0, 1.0, 1.0, 1.0};
     auto grad_in = relu_backward(grad_out, x);
 
-    REQUIRE(grad_in(0) == 0.0);  // x < 0
-    REQUIRE(grad_in(1) == 0.0);  // x < 0
-    REQUIRE(grad_in(2) == 0.0);  // x == 0
-    REQUIRE(grad_in(3) == 1.0);  // x > 0
-    REQUIRE(grad_in(4) == 1.0);  // x > 0
+    REQUIRE(grad_in(0) == 0.0); // x < 0
+    REQUIRE(grad_in(1) == 0.0); // x < 0
+    REQUIRE(grad_in(2) == 0.0); // x == 0
+    REQUIRE(grad_in(3) == 1.0); // x > 0
+    REQUIRE(grad_in(4) == 1.0); // x > 0
   }
 }
 
@@ -157,8 +157,12 @@ TEST_CASE("Softmax activation 1D", "[nn][activations]") {
 TEST_CASE("Softmax activation 2D", "[nn][activations]") {
   SECTION("Forward pass row-wise") {
     Tensor x(2, 3);
-    x(0, 0) = 1.0; x(0, 1) = 2.0; x(0, 2) = 3.0;
-    x(1, 0) = 3.0; x(1, 1) = 2.0; x(1, 2) = 1.0;
+    x(0, 0) = 1.0;
+    x(0, 1) = 2.0;
+    x(0, 2) = 3.0;
+    x(1, 0) = 3.0;
+    x(1, 1) = 2.0;
+    x(1, 2) = 1.0;
 
     auto y = softmax(x);
 

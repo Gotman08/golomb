@@ -5,10 +5,7 @@ namespace golomb {
 namespace nn {
 
 StateEncoder::StateEncoder(int ub, int target_marks, int encoding)
-    : ub_(ub),
-      target_marks_(target_marks),
-      encoding_type_(encoding),
-      encoding_size_(0) {
+    : ub_(ub), target_marks_(target_marks), encoding_type_(encoding), encoding_size_(0) {
   encoding_size_ = compute_encoding_size();
 }
 
@@ -62,8 +59,7 @@ Tensor StateEncoder::encode(const RuleState& state) const {
   return encoding;
 }
 
-void StateEncoder::encode_positions(const RuleState& state, size_t offset,
-                                      Tensor& output) const {
+void StateEncoder::encode_positions(const RuleState& state, size_t offset, Tensor& output) const {
   // Set bit to 1 for each position that has a mark
   for (int mark : state.marks) {
     if (mark >= 0 && mark <= ub_) {
@@ -72,8 +68,7 @@ void StateEncoder::encode_positions(const RuleState& state, size_t offset,
   }
 }
 
-void StateEncoder::encode_distances(const RuleState& state, size_t offset,
-                                      Tensor& output) const {
+void StateEncoder::encode_distances(const RuleState& state, size_t offset, Tensor& output) const {
   // Set bit to 1 for each distance that is used
   // We check all pairwise distances in the current marks
   for (size_t i = 0; i < state.marks.size(); ++i) {
@@ -86,8 +81,7 @@ void StateEncoder::encode_distances(const RuleState& state, size_t offset,
   }
 }
 
-void StateEncoder::encode_metadata(const RuleState& state, size_t offset,
-                                     Tensor& output) const {
+void StateEncoder::encode_metadata(const RuleState& state, size_t offset, Tensor& output) const {
   int num_marks = static_cast<int>(state.marks.size());
   int current_length = state.marks.empty() ? 0 : state.marks.back();
 
@@ -108,5 +102,5 @@ void StateEncoder::encode_metadata(const RuleState& state, size_t offset,
   }
 }
 
-}  // namespace nn
-}  // namespace golomb
+} // namespace nn
+} // namespace golomb

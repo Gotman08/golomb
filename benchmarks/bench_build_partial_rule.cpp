@@ -1,7 +1,7 @@
-#include <benchmark/benchmark.h>
 #include "core/golomb.hpp"
 #include "heuristics/evo.hpp"
 #include "mcts/mcts.hpp"
+#include <benchmark/benchmark.h>
 
 using namespace golomb;
 
@@ -128,7 +128,7 @@ static void BM_MCTS_ExplorationVariance(benchmark::State& state) {
   int n = 7;
   int ub = 80;
   int iters = 500;
-  double c_puct = static_cast<double>(state.range(0)) / 10.0;  // 1.0, 1.4, 2.0
+  double c_puct = static_cast<double>(state.range(0)) / 10.0; // 1.0, 1.4, 2.0
 
   for (auto _ : state) {
     auto rule = mcts_build(n, ub, iters, c_puct);

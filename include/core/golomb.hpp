@@ -11,8 +11,8 @@ namespace golomb {
  * Combines the list of marks with a distance bitset for efficient validation.
  */
 struct RuleState {
-  std::vector<int> marks;  ///< Sorted list of mark positions (includes 0).
-  DistBitset used;         ///< Bitset tracking used distances.
+  std::vector<int> marks; ///< Sorted list of mark positions (includes 0).
+  DistBitset used;        ///< Bitset tracking used distances.
 
   explicit RuleState(int max_dist) : used(max_dist) {}
 };
@@ -47,4 +47,4 @@ struct RuleState {
  */
 bool try_add(RuleState& st, int p);
 
-}  // namespace golomb
+} // namespace golomb

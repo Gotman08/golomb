@@ -34,7 +34,7 @@ void compute_policy_priors_uniform(MCTSNode* node, const std::vector<int>& actio
 
 // Neural network policy priors
 void compute_policy_priors_nn(MCTSNode* node, const std::vector<int>& actions,
-                               nn::GolombNet* network) {
+                              nn::GolombNet* network) {
   if (!network || actions.empty()) {
     compute_policy_priors_uniform(node, actions);
     return;
@@ -88,7 +88,7 @@ double evaluate_leaf_nn(const RuleState& st, int target_n, nn::GolombNet* networ
   // Network value is in [-1, 1] range (from tanh)
   // Scale to be comparable to heuristic (negative length)
   // We can use it directly or scale it
-  return value * 1000.0;  // Scale to make it comparable
+  return value * 1000.0; // Scale to make it comparable
 }
 
 // NOTE: PUCT selection formula
@@ -154,8 +154,8 @@ double simulate(MCTSNode* node, int target_n, int ub, double c_puct, RNG& rng) {
 }
 
 // NOTE: recursive MCTS simulation with neural network
-double simulate_nn(MCTSNode* node, int target_n, int ub, double c_puct,
-                    nn::GolombNet* network, RNG& rng) {
+double simulate_nn(MCTSNode* node, int target_n, int ub, double c_puct, nn::GolombNet* network,
+                   RNG& rng) {
   // Terminal check
   if (static_cast<int>(node->state.marks.size()) >= target_n) {
     node->is_terminal = true;
@@ -187,8 +187,7 @@ double simulate_nn(MCTSNode* node, int target_n, int ub, double c_puct,
   }
 
   // Recursion
-  double value = simulate_nn(node->children[action].get(), target_n, ub, c_puct,
-                              network, rng);
+  double value = simulate_nn(node->children[action].get(), target_n, ub, c_puct, network, rng);
 
   // Backpropagation
   node->N++;
@@ -222,7 +221,7 @@ std::vector<int> extract_best_rule(MCTSNode* root, int target_n) {
   return current->state.marks;
 }
 
-}  // namespace
+} // namespace
 
 std::vector<int> mcts_build(int n, int ub, int iters, double c_puct) {
   auto root = std::make_unique<MCTSNode>(ub);
@@ -238,8 +237,7 @@ std::vector<int> mcts_build(int n, int ub, int iters, double c_puct) {
   return extract_best_rule(root.get(), n);
 }
 
-std::vector<int> mcts_build_nn(int n, int ub, int iters, nn::GolombNet* network,
-                                double c_puct) {
+std::vector<int> mcts_build_nn(int n, int ub, int iters, nn::GolombNet* network, double c_puct) {
   auto root = std::make_unique<MCTSNode>(ub);
   root->state.marks.push_back(0);
 
@@ -253,4 +251,4 @@ std::vector<int> mcts_build_nn(int n, int ub, int iters, nn::GolombNet* network,
   return extract_best_rule(root.get(), n);
 }
 
-}  // namespace golomb
+} // namespace golomb

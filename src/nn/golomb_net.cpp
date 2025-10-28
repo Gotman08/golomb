@@ -4,13 +4,9 @@
 namespace golomb {
 namespace nn {
 
-GolombNet::GolombNet(const StateEncoder& encoder, int ub,
-                     size_t hidden1_size, size_t hidden2_size)
-    : encoder_(encoder),
-      ub_(ub),
-      hidden1_(encoder.encoding_size(), hidden1_size),
-      hidden2_(hidden1_size, hidden2_size),
-      policy_head_(hidden2_size, static_cast<size_t>(ub + 1)),
+GolombNet::GolombNet(const StateEncoder& encoder, int ub, size_t hidden1_size, size_t hidden2_size)
+    : encoder_(encoder), ub_(ub), hidden1_(encoder.encoding_size(), hidden1_size),
+      hidden2_(hidden1_size, hidden2_size), policy_head_(hidden2_size, static_cast<size_t>(ub + 1)),
       value_head_(hidden2_size, 1) {
 
   // Initialize with He (good for ReLU)
@@ -24,7 +20,7 @@ void GolombNet::forward(const RuleState& state, Tensor& policy_out, double& valu
 }
 
 void GolombNet::forward_encoded(const Tensor& encoded_state, Tensor& policy_out,
-                                 double& value_out) {
+                                double& value_out) {
   // Cache input
   cached_input_ = encoded_state.copy();
 
@@ -140,9 +136,7 @@ void GolombNet::zero_grad() {
 }
 
 size_t GolombNet::num_parameters() const {
-  return hidden1_.num_parameters() +
-         hidden2_.num_parameters() +
-         policy_head_.num_parameters() +
+  return hidden1_.num_parameters() + hidden2_.num_parameters() + policy_head_.num_parameters() +
          value_head_.num_parameters();
 }
 
@@ -160,5 +154,5 @@ void GolombNet::init_xavier() {
   value_head_.init_xavier();
 }
 
-}  // namespace nn
-}  // namespace golomb
+} // namespace nn
+} // namespace golomb

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "nn/tensor.hpp"
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace golomb {
 namespace nn {
@@ -60,5 +60,5 @@ public:
   virtual size_t num_parameters() const = 0;
 };
 
-}  // namespace nn
-}  // namespace golomb
+} // namespace nn
+} // namespace golomb

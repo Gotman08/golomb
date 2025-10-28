@@ -63,4 +63,4 @@ bool try_add(RuleState& st, int p) {
   return true;
 }
 
-}  // namespace golomb
+} // namespace golomb

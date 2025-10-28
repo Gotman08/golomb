@@ -11,7 +11,7 @@ namespace {
 // NOTE: fitness = negative length + penalty for conflicts
 int evaluate_fitness(const std::vector<int>& marks) {
   if (!is_valid_rule(marks)) {
-    return -10000;  // Heavy penalty for invalid rulers
+    return -10000; // Heavy penalty for invalid rulers
   }
   return -length(marks);
 }
@@ -23,7 +23,7 @@ std::vector<int> mutate(const std::vector<int>& marks, int ub, RNG& rng) {
   }
 
   std::vector<int> mutated = marks;
-  int idx = rng.uniform_int(1, static_cast<int>(marks.size()) - 1);  // Don't move 0
+  int idx = rng.uniform_int(1, static_cast<int>(marks.size()) - 1); // Don't move 0
   int new_pos = rng.uniform_int(1, ub - 1);
 
   mutated[idx] = new_pos;
@@ -48,7 +48,7 @@ std::vector<int> crossover(const std::vector<int>& p1, const std::vector<int>& p
   return child;
 }
 
-}  // namespace
+} // namespace
 
 std::vector<int> evolutionary_search(int n, int ub, int pop, int iters) {
   RNG rng;
@@ -106,4 +106,4 @@ std::vector<int> evolutionary_search(int n, int ub, int pop, int iters) {
   return hill_climb(best, ub, 1000);
 }
 
-}  // namespace golomb
+} // namespace golomb

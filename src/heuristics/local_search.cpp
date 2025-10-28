@@ -48,4 +48,4 @@ std::vector<int> hill_climb(const std::vector<int>& start, int ub, int budget) {
   return current;
 }
 
-}  // namespace golomb
+} // namespace golomb

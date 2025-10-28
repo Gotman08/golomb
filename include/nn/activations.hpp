@@ -61,7 +61,7 @@ namespace nn {
  * @return Gradient of loss w.r.t. input.
  */
 [[nodiscard]] Tensor leaky_relu_backward(const Tensor& grad_output, const Tensor& input,
-                                          double alpha = 0.01);
+                                         double alpha = 0.01);
 
 /**
  * @brief Tanh (hyperbolic tangent) activation.
@@ -157,5 +157,5 @@ namespace nn {
  */
 [[nodiscard]] Tensor log_softmax_backward(const Tensor& grad_output, const Tensor& output);
 
-}  // namespace nn
-}  // namespace golomb
+} // namespace nn
+} // namespace golomb

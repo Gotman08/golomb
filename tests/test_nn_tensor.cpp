@@ -1,6 +1,6 @@
+#include "nn/tensor.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
-#include "nn/tensor.hpp"
 
 using namespace golomb::nn;
 
@@ -117,8 +117,8 @@ TEST_CASE("Tensor initialization", "[nn][tensor]") {
     for (const auto& val : t.data()) {
       max_val = std::max(max_val, std::abs(val));
     }
-    REQUIRE(max_val > 0.0);  // Not all zeros
-    REQUIRE(max_val < 1.0);  // Reasonable scale
+    REQUIRE(max_val > 0.0); // Not all zeros
+    REQUIRE(max_val < 1.0); // Reasonable scale
   }
 
   SECTION("He initialization") {
@@ -245,14 +245,21 @@ TEST_CASE("Tensor matrix operations", "[nn][tensor]") {
   SECTION("Matrix multiplication") {
     // 2x3 matrix
     Tensor A(2, 3);
-    A(0, 0) = 1.0; A(0, 1) = 2.0; A(0, 2) = 3.0;
-    A(1, 0) = 4.0; A(1, 1) = 5.0; A(1, 2) = 6.0;
+    A(0, 0) = 1.0;
+    A(0, 1) = 2.0;
+    A(0, 2) = 3.0;
+    A(1, 0) = 4.0;
+    A(1, 1) = 5.0;
+    A(1, 2) = 6.0;
 
     // 3x2 matrix
     Tensor B(3, 2);
-    B(0, 0) = 7.0;  B(0, 1) = 8.0;
-    B(1, 0) = 9.0;  B(1, 1) = 10.0;
-    B(2, 0) = 11.0; B(2, 1) = 12.0;
+    B(0, 0) = 7.0;
+    B(0, 1) = 8.0;
+    B(1, 0) = 9.0;
+    B(1, 1) = 10.0;
+    B(2, 0) = 11.0;
+    B(2, 1) = 12.0;
 
     // Result: 2x2
     auto C = A.matmul(B);

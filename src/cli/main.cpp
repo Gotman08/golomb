@@ -46,7 +46,7 @@ void Args::print_usage() {
             << "  --help, -h        show help\n";
 }
 
-}  // namespace golomb
+} // namespace golomb
 
 using namespace golomb;
 

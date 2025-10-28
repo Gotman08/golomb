@@ -1,9 +1,9 @@
 #pragma once
 
+#include "core/golomb.hpp"
 #include "nn/linear.hpp"
 #include "nn/state_encoder.hpp"
 #include "nn/tensor.hpp"
-#include "core/golomb.hpp"
 #include <memory>
 #include <vector>
 
@@ -36,8 +36,8 @@ public:
    * @param hidden1_size Size of first hidden layer (default 256).
    * @param hidden2_size Size of second hidden layer (default 256).
    */
-  GolombNet(const StateEncoder& encoder, int ub,
-            size_t hidden1_size = 256, size_t hidden2_size = 256);
+  GolombNet(const StateEncoder& encoder, int ub, size_t hidden1_size = 256,
+            size_t hidden2_size = 256);
 
   /**
    * @brief Forward pass: compute policy and value.
@@ -118,14 +118,14 @@ public:
   [[nodiscard]] int ub() const { return ub_; }
 
 private:
-  StateEncoder encoder_;  ///< State encoder.
-  int ub_;                ///< Upper bound for positions.
+  StateEncoder encoder_; ///< State encoder.
+  int ub_;               ///< Upper bound for positions.
 
   // Network layers
-  Linear hidden1_;        ///< First hidden layer.
-  Linear hidden2_;        ///< Second hidden layer.
-  Linear policy_head_;    ///< Policy head (outputs logits for each position).
-  Linear value_head_;     ///< Value head (outputs scalar value).
+  Linear hidden1_;     ///< First hidden layer.
+  Linear hidden2_;     ///< Second hidden layer.
+  Linear policy_head_; ///< Policy head (outputs logits for each position).
+  Linear value_head_;  ///< Value head (outputs scalar value).
 
   // Cached activations for backward pass
   Tensor cached_input_;         ///< Cached input (encoded state).
@@ -137,5 +137,5 @@ private:
   Tensor cached_value_tanh_;    ///< Cached value after tanh.
 };
 
-}  // namespace nn
-}  // namespace golomb
+} // namespace nn
+} // namespace golomb
