@@ -21,6 +21,13 @@ namespace nn {
 class Tensor {
 public:
   /**
+   * @brief Default constructor: creates an empty tensor.
+   *
+   * Useful for declaring member variables that will be assigned later.
+   */
+  Tensor() = default;
+
+  /**
    * @brief Construct a tensor with given shape, initialized to zeros.
    * @param shape Dimensions of the tensor (e.g., {3, 4} for 3x4 matrix).
    */
