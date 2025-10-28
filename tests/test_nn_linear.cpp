@@ -108,13 +108,14 @@ TEST_CASE("Linear layer backward pass 1D", "[nn][linear]") {
   REQUIRE_THAT(grad_input(2), Catch::Matchers::WithinAbs(2.0, 1e-6));
 
   // grad_weight[i,j] = grad_output[i] * input[j]
-  auto& grad_w = layer.gradients()[0];
+  auto grads = layer.gradients();
+  auto* grad_w = grads[0];
   REQUIRE_THAT((*grad_w)(0, 0), Catch::Matchers::WithinAbs(1.0, 1e-6));
   REQUIRE_THAT((*grad_w)(0, 1), Catch::Matchers::WithinAbs(2.0, 1e-6));
   REQUIRE_THAT((*grad_w)(0, 2), Catch::Matchers::WithinAbs(3.0, 1e-6));
 
   // grad_bias[i] = grad_output[i]
-  auto& grad_b = layer.gradients()[1];
+  auto* grad_b = grads[1];
   REQUIRE_THAT((*grad_b)(0), Catch::Matchers::WithinAbs(1.0, 1e-6));
   REQUIRE_THAT((*grad_b)(1), Catch::Matchers::WithinAbs(1.0, 1e-6));
 }
@@ -148,7 +149,8 @@ TEST_CASE("Linear layer backward pass 2D batch", "[nn][linear]") {
   }
 
   // grad_weight accumulates over batch
-  auto& grad_w = layer.gradients()[0];
+  auto grads = layer.gradients();
+  auto* grad_w = grads[0];
   // grad_w[i,j] = sum over batch of (grad_output[b,i] * input[b,j])
   // For example, grad_w[0,0] = 1*1 + 1*4 = 5
   REQUIRE_THAT((*grad_w)(0, 0), Catch::Matchers::WithinAbs(5.0, 1e-6));
@@ -156,7 +158,7 @@ TEST_CASE("Linear layer backward pass 2D batch", "[nn][linear]") {
   REQUIRE_THAT((*grad_w)(0, 2), Catch::Matchers::WithinAbs(9.0, 1e-6));
 
   // grad_bias sums over batch
-  auto& grad_b = layer.gradients()[1];
+  auto* grad_b = grads[1];
   REQUIRE_THAT((*grad_b)(0), Catch::Matchers::WithinAbs(2.0, 1e-6));
   REQUIRE_THAT((*grad_b)(1), Catch::Matchers::WithinAbs(2.0, 1e-6));
 }
@@ -225,8 +227,11 @@ TEST_CASE("Linear layer zero_grad", "[nn][linear]") {
   layer.backward(grad_output);
 
   // Gradients should be non-zero after backward
-  auto& grad_w = layer.gradients()[0];
-  REQUIRE((*grad_w)(0, 0) != 0.0);
+  {
+    auto grads = layer.gradients();
+    auto* grad_w = grads[0];
+    REQUIRE((*grad_w)(0, 0) != 0.0);
+  }
 
   // Zero gradients
   layer.zero_grad();
