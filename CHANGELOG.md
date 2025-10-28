@@ -5,6 +5,16 @@ All notable changes to the Golomb Ruler Optimization project will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2](https://github.com/Gotman08/golomb/compare/v1.1.1...v1.1.2) (2025-10-28)
+
+
+### Bug Fixes
+
+* **nn:** implement default constructor as valid scalar tensor ([e332b15](https://github.com/Gotman08/golomb/commit/e332b1558ed44fa9b0f5bbb6b814f3a29ebbe792))
+* **tests:** correct variable scope in zero_grad test ([8f8273d](https://github.com/Gotman08/golomb/commit/8f8273d0fdada2807a7935620f93c09682972b34))
+* **tests:** prevent undefined behavior with temporary vectors ([41997c0](https://github.com/Gotman08/golomb/commit/41997c0ac3e31ce3d5676855c5f5efe1a903d1ad))
+* **tests:** resolve Tensor constructor ambiguity ([1dbf5f1](https://github.com/Gotman08/golomb/commit/1dbf5f1c220cd0fadf6d52f844bff2cd9d9c7fa8))
+
 ## [1.1.1](https://github.com/Gotman08/golomb/compare/v1.1.0...v1.1.1) (2025-10-28)
 
 
