@@ -13,6 +13,7 @@
 #include "mcts/mcts.hpp"
 #include "nn/golomb_net.hpp"
 #include "nn/state_encoder.hpp"
+#include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <iomanip>

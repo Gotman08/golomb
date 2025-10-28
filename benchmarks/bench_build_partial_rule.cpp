@@ -10,7 +10,7 @@ using namespace golomb;
 // ============================================================================
 
 static void BM_BuildPartialRule(benchmark::State& state) {
-  int n = state.range(0);
+  int n = static_cast<int>(state.range(0));
   int ub = n * n;
 
   for (auto _ : state) {
@@ -32,7 +32,7 @@ static void BM_BuildPartialRule(benchmark::State& state) {
 BENCHMARK(BM_BuildPartialRule)->Range(4, 32);
 
 static void BM_ValidateRule(benchmark::State& state) {
-  int n = state.range(0);
+  int n = static_cast<int>(state.range(0));
   auto rule = greedy_seed(n, n * n);
 
   for (auto _ : state) {
@@ -48,7 +48,7 @@ BENCHMARK(BM_ValidateRule)->Range(4, 32);
 // ============================================================================
 
 static void BM_GreedySeed_Small(benchmark::State& state) {
-  int n = state.range(0);
+  int n = static_cast<int>(state.range(0));
   int ub = n * n;
 
   for (auto _ : state) {
@@ -60,7 +60,7 @@ static void BM_GreedySeed_Small(benchmark::State& state) {
 BENCHMARK(BM_GreedySeed_Small)->DenseRange(4, 12, 2);
 
 static void BM_GreedySeed_Medium(benchmark::State& state) {
-  int n = state.range(0);
+  int n = static_cast<int>(state.range(0));
   int ub = n * n;
 
   for (auto _ : state) {
@@ -79,7 +79,7 @@ static void BM_Evolutionary_SmallPopulation(benchmark::State& state) {
   int n = 8;
   int ub = 120;
   int pop = 32;
-  int iters = state.range(0);
+  int iters = static_cast<int>(state.range(0));
 
   for (auto _ : state) {
     auto rule = evolutionary_search(n, ub, pop, iters);
@@ -94,7 +94,7 @@ static void BM_Evolutionary_LargePopulation(benchmark::State& state) {
   int n = 8;
   int ub = 120;
   int pop = 128;
-  int iters = state.range(0);
+  int iters = static_cast<int>(state.range(0));
 
   for (auto _ : state) {
     auto rule = evolutionary_search(n, ub, pop, iters);
@@ -112,7 +112,7 @@ BENCHMARK(BM_Evolutionary_LargePopulation)->Arg(100)->Arg(500)->Arg(1000);
 static void BM_MCTS_ShortRun(benchmark::State& state) {
   int n = 7;
   int ub = 80;
-  int iters = state.range(0);
+  int iters = static_cast<int>(state.range(0));
   double c_puct = 1.4;
 
   for (auto _ : state) {
