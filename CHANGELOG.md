@@ -5,6 +5,28 @@ All notable changes to the Golomb Ruler Optimization project will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0](https://github.com/Gotman08/golomb/compare/v1.0.1...v1.1.0) (2025-10-28)
+
+
+### Features
+
+* **mcts:** integrate neural network for policy priors and value estimation ([c10b78d](https://github.com/Gotman08/golomb/commit/c10b78d3540edd54ecc5e1126cd0b45bbbc2b247))
+* **nn:** add GolombNet with dual-head architecture (AlphaGo-style) ([2a1b645](https://github.com/Gotman08/golomb/commit/2a1b645aeac595f5a647480d2d14d6fe864223eb))
+* **nn:** add linear layer with forward and backward passes ([e86a568](https://github.com/Gotman08/golomb/commit/e86a56861380deec970efc09c0da15b39d00aa97))
+* **nn:** add state encoder for Golomb ruler representation ([ac4fdb7](https://github.com/Gotman08/golomb/commit/ac4fdb7268e33505c34b6eed99f59a6d225dc4c1))
+* **nn:** add tensor class with matrix operations and activation functions ([647965c](https://github.com/Gotman08/golomb/commit/647965cd9a2c8bfc1e6cead2a489639bcd495dcb))
+
+
+### Bug Fixes
+
+* **build:** add missing golomb_nn dependency in benchmarks ([011fcee](https://github.com/Gotman08/golomb/commit/011fcee39d0015c37f094cd951026fa92349abdc))
+* **nn:** add default constructor to Tensor class ([8c7e235](https://github.com/Gotman08/golomb/commit/8c7e235b0071b14ba1b5ab2aaab8cfee48284f02))
+
+
+### Documentation
+
+* **examples:** add demo program and testing guide ([e9e61dd](https://github.com/Gotman08/golomb/commit/e9e61dd634c1c40499c27997965a425f60825010))
+
 ## [1.0.1](https://github.com/Gotman08/golomb/compare/v1.0.0...v1.0.1) (2025-10-26)
 
 
