@@ -38,8 +38,8 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           # Download OR-Tools binary release for Ubuntu
-          ORTOOLS_VERSION="9.10"
-          ORTOOLS_URL="https://github.com/google/or-tools/releases/download/v${ORTOOLS_VERSION}/or-tools_amd64_ubuntu-24.04_cpp_v${ORTOOLS_VERSION}.tar.gz"
+          ORTOOLS_VERSION="9.10.4067"
+          ORTOOLS_URL="https://github.com/google/or-tools/releases/download/v9.10/or-tools_amd64_ubuntu-24.04_cpp_v${ORTOOLS_VERSION}.tar.gz"
 
           wget -q "${ORTOOLS_URL}" -O ortools.tar.gz
           sudo mkdir -p /opt/or-tools
@@ -57,8 +57,8 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           # Download OR-Tools binary release for Windows
-          $ORTOOLS_VERSION = "9.10"
-          $ORTOOLS_URL = "https://github.com/google/or-tools/releases/download/v$ORTOOLS_VERSION/or-tools_x64_windows_v$ORTOOLS_VERSION.zip"
+          $ORTOOLS_VERSION = "9.10.4067"
+          $ORTOOLS_URL = "https://github.com/google/or-tools/releases/download/v9.10/or-tools_x64_VisualStudio2022_cpp_v$ORTOOLS_VERSION.zip"
 
           Invoke-WebRequest -Uri $ORTOOLS_URL -OutFile ortools.zip
           Expand-Archive -Path ortools.zip -DestinationPath C:\ortools
