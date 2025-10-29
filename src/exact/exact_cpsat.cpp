@@ -8,6 +8,7 @@ namespace golomb {
 
 using operations_research::Domain;
 using operations_research::sat::CpModelBuilder;
+using operations_research::sat::CpModelProto;
 using operations_research::sat::CpSolverResponse;
 using operations_research::sat::CpSolverStatus;
 using operations_research::sat::IntVar;
@@ -120,8 +121,9 @@ ExactResult solve_exact_cpsat(const ExactOptions& opts) {
   params.set_cp_model_probing_level(2);
   params.set_symmetry_level(2);
 
-  // 10. Solve the model
-  CpSolverResponse response = SolveWithParameters(model.Build(), params);
+  // 10. Build and solve the model
+  CpModelProto model_proto = model.Build();
+  CpSolverResponse response = SolveWithParameters(model_proto, params);
 
   // 11. Extract results based on solver status
   CpSolverStatus status = response.status();
