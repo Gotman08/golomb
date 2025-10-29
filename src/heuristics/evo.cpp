@@ -10,8 +10,8 @@ namespace {
 
 // Constants for evolutionary algorithm
 constexpr int INVALID_RULER_PENALTY = -10000;
-constexpr int ELITE_FRACTION = 4; // Keep top 1/4 of population
-constexpr int LOCAL_SEARCH_BUDGET = 1000; // Hill climb iterations
+constexpr int ELITE_FRACTION = 4;  // Keep top 1/4 of population
+constexpr int LOCAL_SEARCH_BUDGET = 1000;  // Hill climb iterations
 
 // NOTE: fitness = negative length + penalty for conflicts
 int evaluate_fitness(const std::vector<int>& marks) {
