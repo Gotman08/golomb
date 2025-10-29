@@ -9,6 +9,10 @@ namespace golomb {
 
 namespace {
 
+// Constants for MCTS evaluation
+constexpr double INCOMPLETE_MARK_PENALTY = 1000.0;
+constexpr double NN_VALUE_SCALE = 1000.0;
+
 // NOTE: get legal actions (positions that can be added without conflicts)
 std::vector<int> get_legal_actions(const RuleState& st, int ub) {
   std::vector<int> actions;
@@ -69,7 +73,7 @@ double evaluate_leaf_heuristic(const RuleState& st, int target_n) {
   int len = st.marks.empty() ? 0 : st.marks.back();
 
   if (marks_placed < target_n) {
-    return -len - 1000.0 * (target_n - marks_placed);
+    return -len - INCOMPLETE_MARK_PENALTY * (target_n - marks_placed);
   }
   return -len;
 }
@@ -87,8 +91,7 @@ double evaluate_leaf_nn(const RuleState& st, int target_n, nn::GolombNet* networ
 
   // Network value is in [-1, 1] range (from tanh)
   // Scale to be comparable to heuristic (negative length)
-  // We can use it directly or scale it
-  return value * 1000.0; // Scale to make it comparable
+  return value * NN_VALUE_SCALE;
 }
 
 // NOTE: PUCT selection formula

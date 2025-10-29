@@ -326,13 +326,6 @@ private:
   std::vector<size_t> shape_; ///< Dimensions.
 
   /**
-   * @brief Compute flat index from multi-dimensional indices.
-   * @param indices Vector of indices.
-   * @return Flat index.
-   */
-  [[nodiscard]] size_t compute_index(const std::vector<size_t>& indices) const;
-
-  /**
    * @brief Check if shapes are compatible for element-wise operations.
    * @param other Other tensor.
    * @throws std::invalid_argument if shapes don't match.

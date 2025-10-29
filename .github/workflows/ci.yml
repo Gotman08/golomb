@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [master]
 
+env:
+  ORTOOLS_VERSION: "9.10.4067"
+  ORTOOLS_BASE_URL: "https://github.com/google/or-tools/releases/download/v9.10"
+
 jobs:
   build-and-test:
     strategy:
@@ -38,8 +42,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           # Download OR-Tools binary release for Ubuntu
-          ORTOOLS_VERSION="9.10.4067"
-          ORTOOLS_URL="https://github.com/google/or-tools/releases/download/v9.10/or-tools_amd64_ubuntu-24.04_cpp_v${ORTOOLS_VERSION}.tar.gz"
+          ORTOOLS_URL="${{ env.ORTOOLS_BASE_URL }}/or-tools_amd64_ubuntu-24.04_cpp_v${{ env.ORTOOLS_VERSION }}.tar.gz"
 
           wget -q "${ORTOOLS_URL}" -O ortools.tar.gz
           sudo mkdir -p /opt/or-tools

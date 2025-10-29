@@ -17,12 +17,12 @@ A **Golomb ruler** is a set of marks at integer positions such that all pairwise
 1. **Core** - Bitset-based distance tracking and validation (O(1) distance checks)
 2. **Heuristics** - Evolutionary algorithm with local search for quick solutions
 3. **MCTS** - Monte Carlo Tree Search with PUCT selection for balanced exploration
-4. **Exact** - Interface for CP-SAT/ILP solvers (stub implementation)
+4. **Exact** - OR-Tools CP-SAT solver for optimal solutions
 
 ## Features
 
 - **Efficient distance tracking**: Bitset representation for O(1) conflict detection
-- **Multiple solvers**: Evolutionary, MCTS, exact (stub)
+- **Multiple solvers**: Evolutionary, MCTS, exact CP-SAT
 - **Modular architecture**: Clean separation between core, heuristics, MCTS, and exact layers
 - **Comprehensive testing**: Catch2 unit tests and Google Benchmark performance tests
 - **Modern C++**: C++20 standard with strict warnings and sanitizers in debug builds
@@ -76,7 +76,7 @@ core/              - Distance bitset, validation, state management
 utils/             - RNG utilities
 heuristics/        - Evolutionary algorithm, local search
 mcts/              - PUCT-based MCTS with hooks for policy/value networks
-exact/             - Stub interface for CP-SAT/ILP/Benders
+exact/             - OR-Tools CP-SAT solver for exact optimization
 cli/               - Command-line interface
 ```
 
@@ -171,7 +171,7 @@ BREAKING CHANGE: RuleState constructor signature changed"
 
 ## Future Work
 
-- [ ] Integrate OR-Tools CP-SAT solver for exact solving
+- [ ] Optimize CP-SAT model formulation for larger instances
 - [ ] Add neural network policy/value for MCTS
 - [ ] Implement parallel MCTS with virtual loss
 - [ ] Export MCTS tree to Graphviz for visualization

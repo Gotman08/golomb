@@ -13,21 +13,47 @@ Args Args::parse(int argc, char** argv) {
   Args args;
 
   for (int i = 1; i < argc; ++i) {
-    if (std::strcmp(argv[i], "--order") == 0 && i + 1 < argc) {
-      args.order = std::stoi(argv[++i]);
-    } else if (std::strcmp(argv[i], "--ub") == 0 && i + 1 < argc) {
-      args.ub = std::stoi(argv[++i]);
-    } else if (std::strcmp(argv[i], "--mode") == 0 && i + 1 < argc) {
-      args.mode = argv[++i];
-    } else if (std::strcmp(argv[i], "--iters") == 0 && i + 1 < argc) {
-      args.iters = std::stoi(argv[++i]);
-    } else if (std::strcmp(argv[i], "--c-puct") == 0 && i + 1 < argc) {
-      args.c_puct = std::stod(argv[++i]);
-    } else if (std::strcmp(argv[i], "--timeout") == 0 && i + 1 < argc) {
-      args.timeout_ms = std::stoi(argv[++i]);
-    } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
+    try {
+      if (std::strcmp(argv[i], "--order") == 0 && i + 1 < argc) {
+        args.order = std::stoi(argv[++i]);
+        if (args.order < 2 || args.order > 1000) {
+          throw std::out_of_range("order must be between 2 and 1000");
+        }
+      } else if (std::strcmp(argv[i], "--ub") == 0 && i + 1 < argc) {
+        args.ub = std::stoi(argv[++i]);
+        if (args.ub < 1 || args.ub > 1000000) {
+          throw std::out_of_range("ub must be between 1 and 1000000");
+        }
+      } else if (std::strcmp(argv[i], "--mode") == 0 && i + 1 < argc) {
+        args.mode = argv[++i];
+      } else if (std::strcmp(argv[i], "--iters") == 0 && i + 1 < argc) {
+        args.iters = std::stoi(argv[++i]);
+        if (args.iters < 1 || args.iters > 10000000) {
+          throw std::out_of_range("iters must be between 1 and 10000000");
+        }
+      } else if (std::strcmp(argv[i], "--c-puct") == 0 && i + 1 < argc) {
+        args.c_puct = std::stod(argv[++i]);
+        if (args.c_puct < 0.0 || args.c_puct > 100.0) {
+          throw std::out_of_range("c-puct must be between 0.0 and 100.0");
+        }
+      } else if (std::strcmp(argv[i], "--timeout") == 0 && i + 1 < argc) {
+        args.timeout_ms = std::stoi(argv[++i]);
+        if (args.timeout_ms < 1 || args.timeout_ms > 3600000) {
+          throw std::out_of_range("timeout must be between 1ms and 3600000ms (1 hour)");
+        }
+      } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
+        print_usage();
+        std::exit(0);
+      }
+    } catch (const std::invalid_argument& e) {
+      std::cerr << "Error: invalid argument for " << argv[i - 1] << ": '" << argv[i]
+                << "' (not a valid number)\n";
       print_usage();
-      std::exit(0);
+      std::exit(1);
+    } catch (const std::out_of_range& e) {
+      std::cerr << "Error: " << e.what() << "\n";
+      print_usage();
+      std::exit(1);
     }
   }
 

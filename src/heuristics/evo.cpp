@@ -8,10 +8,15 @@ namespace golomb {
 
 namespace {
 
+// Constants for evolutionary algorithm
+constexpr int INVALID_RULER_PENALTY = -10000;
+constexpr int ELITE_FRACTION = 4;           // Keep top 1/4 of population
+constexpr int LOCAL_SEARCH_BUDGET = 1000;   // Hill climb iterations
+
 // NOTE: fitness = negative length + penalty for conflicts
 int evaluate_fitness(const std::vector<int>& marks) {
   if (!is_valid_rule(marks)) {
-    return -10000; // Heavy penalty for invalid rulers
+    return INVALID_RULER_PENALTY; // Heavy penalty for invalid rulers
   }
   return -length(marks);
 }
@@ -83,9 +88,9 @@ std::vector<int> evolutionary_search(int n, int ub, int pop, int iters) {
     std::sort(fitness_idx.begin(), fitness_idx.end(),
               [](const auto& a, const auto& b) { return a.first > b.first; });
 
-    // Create new population: keep top 25%, generate rest via mutation/crossover
+    // Create new population: keep elite, generate rest via mutation/crossover
     std::vector<std::vector<int>> new_pop;
-    int elite_count = pop / 4;
+    int elite_count = pop / ELITE_FRACTION;
     for (int i = 0; i < elite_count; ++i) {
       new_pop.push_back(population[fitness_idx[i].second]);
     }
@@ -103,7 +108,7 @@ std::vector<int> evolutionary_search(int n, int ub, int pop, int iters) {
   }
 
   // Apply local search to best solution
-  return hill_climb(best, ub, 1000);
+  return hill_climb(best, ub, LOCAL_SEARCH_BUDGET);
 }
 
 } // namespace golomb

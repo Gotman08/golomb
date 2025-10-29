@@ -59,11 +59,6 @@
             "label": "Golomb CLI (Linux x64)"
           },
           {
-            "path": "build/golomb_cli.exe",
-            "name": "golomb_cli-windows-x64.exe",
-            "label": "Golomb CLI (Windows x64)"
-          },
-          {
             "path": "CHANGELOG.md",
             "name": "CHANGELOG.md",
             "label": "Changelog"

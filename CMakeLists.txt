@@ -39,18 +39,20 @@ else()
   message(STATUS "Using system OR-Tools: ${ortools_DIR}")
 endif()
 
-# Strict warnings
-if(MSVC)
-  add_compile_options(/W4 /WX)
-else()
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
+# Strict warnings (Linux/GCC/Clang)
+add_compile_options(-Wall -Wextra -Wpedantic)
 
 # Debug flags with sanitizers (Linux only)
 # Disabled when using pre-compiled OR-Tools (ABI incompatibility)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT ortools_FOUND)
   add_compile_options(-fsanitize=address -fsanitize=undefined)
   add_link_options(-fsanitize=address -fsanitize=undefined)
+endif()
+
+# Release optimizations
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  add_compile_options(-O3 -DNDEBUG)
+  add_compile_definitions(NDEBUG)
 endif()
 
 # Export compile commands for clang-tidy
