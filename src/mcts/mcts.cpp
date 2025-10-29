@@ -224,7 +224,7 @@ std::vector<int> extract_best_rule(MCTSNode* root, int target_n) {
   return current->state.marks;
 }
 
-}  // namespace
+} // namespace
 
 std::vector<int> mcts_build(int n, int ub, int iters, double c_puct) {
   auto root = std::make_unique<MCTSNode>(ub);
@@ -254,4 +254,4 @@ std::vector<int> mcts_build_nn(int n, int ub, int iters, nn::GolombNet* network,
   return extract_best_rule(root.get(), n);
 }
 
-}  // namespace golomb
+} // namespace golomb

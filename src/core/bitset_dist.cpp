@@ -16,7 +16,7 @@ inline std::pair<int, int> compute_bit_indices(int d) {
   return {d / BITS_PER_WORD, d % BITS_PER_WORD};
 }
 
-}  // anonymous namespace
+} // anonymous namespace
 
 DistBitset::DistBitset(int max_dist) : max_dist_(max_dist) {
   if (max_dist <= 0) {
