@@ -89,8 +89,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: golomb_cli-${{ runner.os }}
-          path: |
-            build/golomb_cli
-            build/Release/golomb_cli.exe
-            build/golomb_cli.exe
+          path: build/golomb_cli
           if-no-files-found: ignore

@@ -26,7 +26,7 @@ This project adheres to a code of conduct that we expect all contributors to fol
 ### Prerequisites
 
 - CMake 3.22+
-- C++20 compatible compiler (GCC 10+, Clang 13+, MSVC 2019+)
+- C++20 compatible compiler (GCC 10+, Clang 13+)
 - Git for version control
 - (Optional) Node.js 18+ for MCP servers
 
@@ -161,7 +161,7 @@ Common scopes in this project:
 ## Pull Request Process
 
 1. **Ensure all checks pass:**
-   - All tests pass on both Linux and Windows
+   - All tests pass on Linux
    - Code follows formatting guidelines
    - No compiler warnings
    - Benchmarks show no significant regressions (>10%)
@@ -182,7 +182,7 @@ Common scopes in this project:
    - Rebase on master if needed
 
 5. **Automated checks:**
-   - CI builds on Ubuntu and Windows
+   - CI builds on Ubuntu
    - Unit tests execution
    - Static analysis (clang-tidy, cppcheck)
    - Benchmark comparison (for performance-related changes)

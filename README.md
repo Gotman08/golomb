@@ -32,13 +32,12 @@ A **Golomb ruler** is a set of marks at integer positions such that all pairwise
 ### Prerequisites
 
 - CMake 3.22+
-- C++20 compiler (GCC 10+, Clang 13+, MSVC 2019+)
+- C++20 compiler (GCC 10+, Clang 13+)
 - Git (for CPM package manager)
 
 ### Quick Start
 
 ```bash
-# Unix-like systems
 ./scripts/build.sh
 ./scripts/run_tests.sh
 
@@ -49,22 +48,12 @@ cmake --build build -j
 ctest --test-dir build
 ```
 
-### Windows
-
-```powershell
-mkdir build
-cmake -S . -B build
-cmake --build build --config Release
-ctest --test-dir build -C Release
-```
-
 ## Pre-built Binaries
 
 Download pre-compiled binaries from the [latest successful CI run](https://github.com/Gotman08/golomb/actions/workflows/ci.yml):
 - **Linux**: `golomb_cli-Linux` artifact
-- **Windows**: `golomb_cli-Windows` artifact
 
-Extract the executable and run directly on your platform.
+Extract the executable and run directly.
 
 ## Usage
 
