@@ -5,6 +5,13 @@ All notable changes to the Golomb Ruler Optimization project will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1](https://github.com/Gotman08/golomb/compare/v1.2.0...v1.2.1) (2025-10-29)
+
+
+### Code Refactoring
+
+* improve code quality and remove Windows remnants ([8d62f94](https://github.com/Gotman08/golomb/commit/8d62f943523e2d81b4ad29a7b2a6be9865192fc2))
+
 ## [1.2.0](https://github.com/Gotman08/golomb/compare/v1.1.3...v1.2.0) (2025-10-29)
 
 
