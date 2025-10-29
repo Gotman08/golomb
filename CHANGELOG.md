@@ -5,6 +5,39 @@ All notable changes to the Golomb Ruler Optimization project will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0](https://github.com/Gotman08/golomb/compare/v1.1.3...v1.2.0) (2025-10-29)
+
+
+### Features
+
+* **exact:** integrate OR-Tools CP-SAT solver for exact solving ([c1900db](https://github.com/Gotman08/golomb/commit/c1900dbcadc65777de94f9b8cf0c0ea5c06065b4))
+
+
+### Bug Fixes
+
+* **ci:** add OR-Tools pre-compiled binary installation to release workflow ([0cfe59b](https://github.com/Gotman08/golomb/commit/0cfe59b701b69aaf6ab87e9a744d4824b1253e51))
+* **ci:** correct OR-Tools extraction path on Windows ([7de1da3](https://github.com/Gotman08/golomb/commit/7de1da3dddf7d1fffda631b4d65b6567732a172b))
+* **ci:** correct OR-Tools release version to v9.10.4067 ([fc0a507](https://github.com/Gotman08/golomb/commit/fc0a507c3ae4c12feab3975d59546c2247248a35))
+* **ci:** use pre-compiled OR-Tools binaries to avoid timeout ([b220d7e](https://github.com/Gotman08/golomb/commit/b220d7ef002c916f81bd454751134f12b728ab1e))
+* **cmake:** disable sanitizers when using pre-compiled OR-Tools ([6e8b1c5](https://github.com/Gotman08/golomb/commit/6e8b1c5af5c8e2891ecde1199580b65e37e76fea))
+* **cmake:** skip pre-compiled OR-Tools for Windows Debug builds ([774fc30](https://github.com/Gotman08/golomb/commit/774fc3068bc13e30421d72739abf66e94df7347d))
+* **exact:** add using declaration for operations_research::Domain ([9f76892](https://github.com/Gotman08/golomb/commit/9f76892a8641c7f9bd6c976767556d2a1007071b))
+* **exact:** store CpModelProto before passing to solver ([60079fa](https://github.com/Gotman08/golomb/commit/60079faee8e0449be14e11e042eb11a1ab09c460))
+* **exact:** use explicit using declarations for all OR-Tools types ([f3fc967](https://github.com/Gotman08/golomb/commit/f3fc967731064abfc8226fab68bf7609d3f6bd86))
+* **exact:** use SolveWithParameters function instead of CpSolver class ([8491e1f](https://github.com/Gotman08/golomb/commit/8491e1f1983d0dac35d776bd70d8184aa6bfc9a5))
+* **tests:** accept multiple optimal solutions for order 6 Golomb ruler ([2ee6a4b](https://github.com/Gotman08/golomb/commit/2ee6a4b2dd4c7e1fc7ecd8fed018ac6a155534c5))
+* **tests:** wrap OR expression in parentheses for Catch2 ([cd852d4](https://github.com/Gotman08/golomb/commit/cd852d42797ec9806ac0ecc10c9fe223171bccd8))
+
+
+### Documentation
+
+* remove all Windows references from project ([85a8f8e](https://github.com/Gotman08/golomb/commit/85a8f8e5125dd44ac378832277789f0d09a52eea))
+
+
+### Code Refactoring
+
+* extract helper functions to reduce code duplication ([1cab3be](https://github.com/Gotman08/golomb/commit/1cab3be79de8f96cbc355eeb1f3c81eee8d36e75))
+
 ## [1.1.3](https://github.com/Gotman08/golomb/compare/v1.1.2...v1.1.3) (2025-10-28)
 
 
