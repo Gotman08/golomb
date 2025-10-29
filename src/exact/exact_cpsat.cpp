@@ -6,8 +6,15 @@
 
 namespace golomb {
 
-using namespace operations_research::sat;
 using operations_research::Domain;
+using operations_research::sat::CpModelBuilder;
+using operations_research::sat::CpSolver;
+using operations_research::sat::CpSolverResponse;
+using operations_research::sat::CpSolverStatus;
+using operations_research::sat::IntVar;
+using operations_research::sat::LinearExpr;
+using operations_research::sat::SatParameters;
+using operations_research::sat::SolutionIntegerValue;
 
 /**
  * @brief Solve Golomb ruler exactly using OR-Tools CP-SAT.
