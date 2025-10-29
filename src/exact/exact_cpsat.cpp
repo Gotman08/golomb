@@ -47,8 +47,7 @@ ExactResult solve_exact_cpsat(const ExactOptions& opts) {
   marks.reserve(opts.n);
 
   for (int i = 0; i < opts.n; ++i) {
-    marks.push_back(model.NewIntVar(Domain(0, opts.ub))
-                        .WithName("mark_" + std::to_string(i)));
+    marks.push_back(model.NewIntVar(Domain(0, opts.ub)).WithName("mark_" + std::to_string(i)));
   }
 
   // 2. Fix first mark at position 0
@@ -69,8 +68,7 @@ ExactResult solve_exact_cpsat(const ExactOptions& opts) {
     for (int j = i + 1; j < opts.n; ++j) {
       // Distance between mark i and mark j
       IntVar dist = model.NewIntVar(Domain(1, opts.ub))
-                        .WithName("dist_" + std::to_string(i) + "_" +
-                                  std::to_string(j));
+                        .WithName("dist_" + std::to_string(i) + "_" + std::to_string(j));
 
       // dist = marks[j] - marks[i]
       model.AddEquality(dist, LinearExpr(marks[j]) - LinearExpr(marks[i]));
@@ -90,8 +88,7 @@ ExactResult solve_exact_cpsat(const ExactOptions& opts) {
     // last_distance = marks[n-1] - marks[n-2]
     IntVar first_dist = marks[1]; // Since marks[0] = 0
     IntVar last_dist = model.NewIntVar(Domain(1, opts.ub));
-    model.AddEquality(last_dist, LinearExpr(marks[opts.n - 1]) -
-                                      LinearExpr(marks[opts.n - 2]));
+    model.AddEquality(last_dist, LinearExpr(marks[opts.n - 1]) - LinearExpr(marks[opts.n - 2]));
     model.AddLessThan(first_dist, last_dist);
   }
 
@@ -135,8 +132,7 @@ ExactResult solve_exact_cpsat(const ExactOptions& opts) {
     result.rule.reserve(opts.n);
 
     for (const auto& mark : marks) {
-      result.rule.push_back(
-          static_cast<int>(SolutionIntegerValue(response, mark)));
+      result.rule.push_back(static_cast<int>(SolutionIntegerValue(response, mark)));
     }
 
     result.lb = static_cast<int>(response.objective_value());
@@ -150,8 +146,7 @@ ExactResult solve_exact_cpsat(const ExactOptions& opts) {
     result.rule.reserve(opts.n);
 
     for (const auto& mark : marks) {
-      result.rule.push_back(
-          static_cast<int>(SolutionIntegerValue(response, mark)));
+      result.rule.push_back(static_cast<int>(SolutionIntegerValue(response, mark)));
     }
 
     result.lb = static_cast<int>(response.best_objective_bound());
