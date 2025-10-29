@@ -14,8 +14,11 @@ option(BUILD_EXAMPLES "Build examples" ON)
 include(cmake/CPM.cmake)
 
 # OR-Tools integration: prefer system install, fallback to CPM
+# Note: Pre-compiled binaries are Release-only on Windows, skip for Debug builds
 # Try to find OR-Tools installed on system (from apt, vcpkg, etc.)
-find_package(ortools CONFIG QUIET)
+if(NOT (WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug"))
+  find_package(ortools CONFIG QUIET)
+endif()
 
 if(NOT ortools_FOUND)
   message(STATUS "OR-Tools not found on system, will use CPM to build from source")
