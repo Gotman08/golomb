@@ -17,6 +17,39 @@ using operations_research::sat::SatParameters;
 using operations_research::sat::SolutionIntegerValue;
 using operations_research::sat::SolveWithParameters;
 
+namespace {
+
+// Helper: Calculate minimum possible Golomb ruler length for n marks
+// This is the triangular number: n*(n-1)/2
+constexpr int calculate_min_golomb_length(int n) {
+  return n * (n - 1) / 2;
+}
+
+// Helper: Extract solution from solver response
+std::vector<int> extract_solution_from_response(const CpSolverResponse& response,
+                                                const std::vector<IntVar>& marks) {
+  std::vector<int> solution;
+  solution.reserve(marks.size());
+  for (const auto& mark : marks) {
+    solution.push_back(static_cast<int>(SolutionIntegerValue(response, mark)));
+  }
+  return solution;
+}
+
+// Helper: Configure solver parameters for CP-SAT
+SatParameters configure_solver_parameters(int timeout_ms) {
+  SatParameters params;
+  params.set_max_time_in_seconds(timeout_ms / 1000.0);
+  params.set_log_search_progress(false);
+  params.set_search_branching(SatParameters::AUTOMATIC_SEARCH);
+  params.set_cp_model_presolve(true);
+  params.set_cp_model_probing_level(2);
+  params.set_symmetry_level(2);
+  return params;
+}
+
+} // anonymous namespace
+
 /**
  * @brief Solve Golomb ruler exactly using OR-Tools CP-SAT.
  *
@@ -93,30 +126,14 @@ ExactResult solve_exact_cpsat(const ExactOptions& opts) {
   }
 
   // 7. Implied lower bound constraint
-  // The minimum possible length is the triangular number: n*(n-1)/2
-  int min_length = opts.n * (opts.n - 1) / 2;
+  int min_length = calculate_min_golomb_length(opts.n);
   model.AddGreaterOrEqual(marks[opts.n - 1], min_length);
 
   // 8. Set objective: minimize ruler length (last mark position)
   model.Minimize(marks[opts.n - 1]);
 
   // 9. Configure solver parameters
-  SatParameters params;
-
-  // Set timeout
-  double timeout_seconds = opts.timeout_ms / 1000.0;
-  params.set_max_time_in_seconds(timeout_seconds);
-
-  // Disable search progress logging (keep output clean)
-  params.set_log_search_progress(false);
-
-  // Use default search (automatic)
-  params.set_search_branching(SatParameters::AUTOMATIC_SEARCH);
-
-  // Enable all optimizations
-  params.set_cp_model_presolve(true);
-  params.set_cp_model_probing_level(2);
-  params.set_symmetry_level(2);
+  SatParameters params = configure_solver_parameters(opts.timeout_ms);
 
   // 10. Build and solve the model
   CpModelProto model_proto = model.Build();
@@ -128,13 +145,7 @@ ExactResult solve_exact_cpsat(const ExactOptions& opts) {
   if (status == CpSolverStatus::OPTIMAL) {
     // Found provably optimal solution
     result.optimal = true;
-    result.rule.clear();
-    result.rule.reserve(opts.n);
-
-    for (const auto& mark : marks) {
-      result.rule.push_back(static_cast<int>(SolutionIntegerValue(response, mark)));
-    }
-
+    result.rule = extract_solution_from_response(response, marks);
     result.lb = static_cast<int>(response.objective_value());
     result.ub = result.lb; // lb = ub when optimal
     result.message = "optimal";
@@ -142,13 +153,7 @@ ExactResult solve_exact_cpsat(const ExactOptions& opts) {
   } else if (status == CpSolverStatus::FEASIBLE) {
     // Found feasible solution but not proven optimal (timeout)
     result.optimal = false;
-    result.rule.clear();
-    result.rule.reserve(opts.n);
-
-    for (const auto& mark : marks) {
-      result.rule.push_back(static_cast<int>(SolutionIntegerValue(response, mark)));
-    }
-
+    result.rule = extract_solution_from_response(response, marks);
     result.lb = static_cast<int>(response.best_objective_bound());
     result.ub = static_cast<int>(response.objective_value());
     result.message = "feasible (timeout)";

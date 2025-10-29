@@ -1,8 +1,44 @@
 #include "core/golomb.hpp"
 #include "exact/exact_iface.hpp"
 #include <catch2/catch_test_macros.hpp>
+#include <map>
+#include <vector>
 
 using namespace golomb;
+
+namespace {
+
+// Known optimal Golomb ruler solutions
+const std::map<int, std::vector<std::vector<int>>> KNOWN_OPTIMAL_RULERS = {
+    {3, {{0, 1, 3}}},
+    {4, {{0, 1, 4, 6}}},
+    {5, {{0, 1, 4, 9, 11}, {0, 2, 7, 8, 11}}},
+    {6, {{0, 1, 4, 9, 15, 17}, {0, 1, 4, 10, 12, 17}}}};
+
+// Helper: Validate basic properties of an ExactResult
+void validate_basic_result(const ExactResult& res, int expected_size) {
+  REQUIRE(!res.rule.empty());
+  REQUIRE(res.rule.size() == static_cast<size_t>(expected_size));
+  REQUIRE(res.rule[0] == 0);
+  REQUIRE(is_valid_rule(res.rule));
+}
+
+// Helper: Check if result matches any known optimal solution
+bool matches_known_optimal(const std::vector<int>& rule, int order) {
+  auto it = KNOWN_OPTIMAL_RULERS.find(order);
+  if (it == KNOWN_OPTIMAL_RULERS.end()) {
+    return false;
+  }
+
+  for (const auto& known_solution : it->second) {
+    if (rule == known_solution) {
+      return true;
+    }
+  }
+  return false;
+}
+
+} // namespace
 
 TEST_CASE("CP-SAT solves known optimal rulers", "[exact][cpsat]") {
   SECTION("Order 3, optimal length 3") {
@@ -10,13 +46,9 @@ TEST_CASE("CP-SAT solves known optimal rulers", "[exact][cpsat]") {
     ExactResult res = solve_exact_cpsat(opts);
 
     REQUIRE(res.optimal);
-    REQUIRE(res.rule.size() == 3);
-    REQUIRE(res.rule[0] == 0);
+    validate_basic_result(res, 3);
     REQUIRE(length(res.rule) == 3);
-    REQUIRE(is_valid_rule(res.rule));
-
-    // Known optimal: {0, 1, 3}
-    REQUIRE(res.rule == std::vector<int>{0, 1, 3});
+    REQUIRE(matches_known_optimal(res.rule, 3));
   }
 
   SECTION("Order 4, optimal length 6") {
@@ -24,13 +56,9 @@ TEST_CASE("CP-SAT solves known optimal rulers", "[exact][cpsat]") {
     ExactResult res = solve_exact_cpsat(opts);
 
     REQUIRE(res.optimal);
-    REQUIRE(res.rule.size() == 4);
-    REQUIRE(res.rule[0] == 0);
+    validate_basic_result(res, 4);
     REQUIRE(length(res.rule) == 6);
-    REQUIRE(is_valid_rule(res.rule));
-
-    // Known optimal: {0, 1, 4, 6}
-    REQUIRE(res.rule == std::vector<int>{0, 1, 4, 6});
+    REQUIRE(matches_known_optimal(res.rule, 4));
   }
 
   SECTION("Order 5, optimal length 11") {
@@ -38,15 +66,9 @@ TEST_CASE("CP-SAT solves known optimal rulers", "[exact][cpsat]") {
     ExactResult res = solve_exact_cpsat(opts);
 
     REQUIRE(res.optimal);
-    REQUIRE(res.rule.size() == 5);
-    REQUIRE(res.rule[0] == 0);
+    validate_basic_result(res, 5);
     REQUIRE(length(res.rule) == 11);
-    REQUIRE(is_valid_rule(res.rule));
-
-    // Known optimal solutions: {0, 1, 4, 9, 11} or {0, 2, 7, 8, 11}
-    bool is_known_optimal = (res.rule == std::vector<int>{0, 1, 4, 9, 11}) ||
-                            (res.rule == std::vector<int>{0, 2, 7, 8, 11});
-    REQUIRE(is_known_optimal);
+    REQUIRE(matches_known_optimal(res.rule, 5));
   }
 
   SECTION("Order 6, optimal length 17") {
@@ -55,15 +77,9 @@ TEST_CASE("CP-SAT solves known optimal rulers", "[exact][cpsat]") {
 
     // May timeout on slow systems, but should find optimal
     if (res.optimal) {
-      REQUIRE(res.rule.size() == 6);
-      REQUIRE(res.rule[0] == 0);
+      validate_basic_result(res, 6);
       REQUIRE(length(res.rule) == 17);
-      REQUIRE(is_valid_rule(res.rule));
-
-      // Known optimal solutions (there are multiple for n=6)
-      bool is_known_optimal = (res.rule == std::vector<int>{0, 1, 4, 9, 15, 17}) ||
-                              (res.rule == std::vector<int>{0, 1, 4, 10, 12, 17});
-      REQUIRE(is_known_optimal);
+      REQUIRE(matches_known_optimal(res.rule, 6));
     }
   }
 }
