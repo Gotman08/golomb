@@ -61,8 +61,11 @@ TEST_CASE("CP-SAT solves known optimal rulers", "[exact][cpsat]") {
       REQUIRE(length(res.rule) == 17);
       REQUIRE(is_valid_rule(res.rule));
 
-      // Known optimal: {0, 1, 4, 9, 15, 17}
-      REQUIRE(res.rule == std::vector<int>{0, 1, 4, 9, 15, 17});
+      // Known optimal solutions (there are multiple for n=6)
+      bool is_known_optimal =
+          (res.rule == std::vector<int>{0, 1, 4, 9, 15, 17}) ||
+          (res.rule == std::vector<int>{0, 1, 4, 10, 12, 17});
+      REQUIRE(is_known_optimal);
     }
   }
 }
