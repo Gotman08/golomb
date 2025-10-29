@@ -7,6 +7,7 @@
 namespace golomb {
 
 using namespace operations_research::sat;
+using operations_research::Domain;
 
 /**
  * @brief Solve Golomb ruler exactly using OR-Tools CP-SAT.
