@@ -47,4 +47,26 @@ struct RuleState {
  */
 bool try_add(RuleState& st, int p);
 
+/**
+ * @brief Apply a function to all pairwise distances in a ruler.
+ * @param marks Sorted list of mark positions.
+ * @param func Function to apply to each distance (signature: void(int distance))
+ */
+template<typename Func>
+void for_each_pairwise_distance(const std::vector<int>& marks, Func&& func) {
+  for (size_t i = 0; i < marks.size(); ++i) {
+    for (size_t j = i + 1; j < marks.size(); ++j) {
+      int dist = marks[j] - marks[i];
+      func(dist);
+    }
+  }
+}
+
+/**
+ * @brief Compute all pairwise distances in a ruler.
+ * @param marks Sorted list of mark positions.
+ * @return Vector of all pairwise distances.
+ */
+[[nodiscard]] std::vector<int> compute_all_distances(const std::vector<int>& marks);
+
 } // namespace golomb

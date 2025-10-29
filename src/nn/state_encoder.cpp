@@ -1,4 +1,5 @@
 #include "nn/state_encoder.hpp"
+#include "core/golomb.hpp"
 #include <algorithm>
 
 namespace golomb {
@@ -70,15 +71,11 @@ void StateEncoder::encode_positions(const RuleState& state, size_t offset, Tenso
 
 void StateEncoder::encode_distances(const RuleState& state, size_t offset, Tensor& output) const {
   // Set bit to 1 for each distance that is used
-  // We check all pairwise distances in the current marks
-  for (size_t i = 0; i < state.marks.size(); ++i) {
-    for (size_t j = i + 1; j < state.marks.size(); ++j) {
-      int dist = std::abs(state.marks[j] - state.marks[i]);
-      if (dist >= 0 && dist <= ub_) {
-        output(offset + static_cast<size_t>(dist)) = 1.0;
-      }
+  for_each_pairwise_distance(state.marks, [&](int dist) {
+    if (dist >= 0 && dist <= ub_) {
+      output(offset + static_cast<size_t>(dist)) = 1.0;
     }
-  }
+  });
 }
 
 void StateEncoder::encode_metadata(const RuleState& state, size_t offset, Tensor& output) const {

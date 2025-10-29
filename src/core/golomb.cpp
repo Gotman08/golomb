@@ -10,16 +10,25 @@ bool is_valid_rule(const std::vector<int>& marks) {
   }
 
   std::unordered_set<int> distances;
-  for (size_t i = 0; i < marks.size(); ++i) {
-    for (size_t j = i + 1; j < marks.size(); ++j) {
-      int dist = marks[j] - marks[i];
-      if (distances.count(dist)) {
-        return false;
-      }
-      distances.insert(dist);
+  bool valid = true;
+
+  for_each_pairwise_distance(marks, [&](int dist) {
+    if (distances.count(dist)) {
+      valid = false;
     }
-  }
-  return true;
+    distances.insert(dist);
+  });
+
+  return valid;
+}
+
+std::vector<int> compute_all_distances(const std::vector<int>& marks) {
+  std::vector<int> distances;
+  distances.reserve((marks.size() * (marks.size() - 1)) / 2);
+
+  for_each_pairwise_distance(marks, [&](int dist) { distances.push_back(dist); });
+
+  return distances;
 }
 
 int length(const std::vector<int>& marks) {

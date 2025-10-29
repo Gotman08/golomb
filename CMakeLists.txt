@@ -66,6 +66,7 @@ add_library(golomb_core
   src/core/golomb.cpp
   src/core/bitset_dist.cpp
   src/utils/random.cpp
+  src/utils/mutations.cpp
 )
 target_include_directories(golomb_core PUBLIC ${PROJECT_SOURCE_DIR}/include)
 

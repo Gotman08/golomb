@@ -1,6 +1,7 @@
 #include "heuristics/evo.hpp"
 #include "core/golomb.hpp"
 #include "heuristics/local_search.hpp"
+#include "utils/mutations.hpp"
 #include "utils/random.hpp"
 #include <algorithm>
 
@@ -25,19 +26,7 @@ int evaluate_fitness(const std::vector<int>& marks) {
 
 // NOTE: mutate by moving one random mark to a new position
 std::vector<int> mutate(const std::vector<int>& marks, int ub, RNG& rng) {
-  if (marks.size() < 2) {
-    return marks;
-  }
-
-  std::vector<int> mutated = marks;
-  int idx = rng.uniform_int(1, static_cast<int>(marks.size()) - 1); // Don't move 0
-  int new_pos = rng.uniform_int(1, ub - 1);
-
-  mutated[idx] = new_pos;
-  std::sort(mutated.begin(), mutated.end());
-  mutated.erase(std::unique(mutated.begin(), mutated.end()), mutated.end());
-
-  return mutated;
+  return mutate_single_mark(marks, ub, rng);
 }
 
 // NOTE: simple crossover - take first half from parent1, second from parent2

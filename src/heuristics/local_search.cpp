@@ -1,5 +1,6 @@
 #include "heuristics/local_search.hpp"
 #include "core/golomb.hpp"
+#include "utils/mutations.hpp"
 #include "utils/random.hpp"
 #include <algorithm>
 
@@ -16,24 +17,8 @@ std::vector<int> hill_climb(const std::vector<int>& start, int ub, int budget) {
 
   // TODO: implement neighborhood exploration, acceptance criteria, restart strategies
   for (int iter = 0; iter < budget; ++iter) {
-    // Try moving a random mark (excluding 0) to a random position
-    if (current.size() < 2) {
-      break;
-    }
-
-    int idx = rng.uniform_int(1, static_cast<int>(current.size()) - 1);
-    int old_pos = current[idx];
-    int new_pos = rng.uniform_int(1, ub - 1);
-
-    if (new_pos == old_pos) {
-      continue;
-    }
-
-    // Create neighbor
-    std::vector<int> neighbor = current;
-    neighbor[idx] = new_pos;
-    std::sort(neighbor.begin(), neighbor.end());
-    neighbor.erase(std::unique(neighbor.begin(), neighbor.end()), neighbor.end());
+    // Create neighbor by mutating a single mark
+    std::vector<int> neighbor = mutate_single_mark(current, ub, rng);
 
     // Check if valid and better
     if (is_valid_rule(neighbor)) {

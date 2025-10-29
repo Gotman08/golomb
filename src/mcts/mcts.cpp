@@ -114,23 +114,48 @@ int select_action_puct(MCTSNode* node, double c_puct) {
   return best_action;
 }
 
-// NOTE: recursive MCTS simulation (heuristic version)
-double simulate(MCTSNode* node, int target_n, int ub, double c_puct, RNG& rng) {
+// Policy objects for generic MCTS implementation
+struct HeuristicPolicy {
+  double evaluate_leaf(const RuleState& st, int target_n) const {
+    return evaluate_leaf_heuristic(st, target_n);
+  }
+
+  void compute_priors(MCTSNode* node, const std::vector<int>& actions) const {
+    compute_policy_priors_uniform(node, actions);
+  }
+};
+
+struct NNPolicy {
+  nn::GolombNet* network;
+
+  double evaluate_leaf(const RuleState& st, int target_n) const {
+    return evaluate_leaf_nn(st, target_n, network);
+  }
+
+  void compute_priors(MCTSNode* node, const std::vector<int>& actions) const {
+    compute_policy_priors_nn(node, actions, network);
+  }
+};
+
+// NOTE: Generic MCTS simulation - unified implementation
+template<typename Policy>
+double simulate_impl(MCTSNode* node, int target_n, int ub, double c_puct, const Policy& policy,
+                     RNG& rng) {
   // Terminal check
   if (static_cast<int>(node->state.marks.size()) >= target_n) {
     node->is_terminal = true;
-    return evaluate_leaf_heuristic(node->state, target_n);
+    return policy.evaluate_leaf(node->state, target_n);
   }
 
   std::vector<int> actions = get_legal_actions(node->state, ub);
   if (actions.empty()) {
     node->is_terminal = true;
-    return evaluate_leaf_heuristic(node->state, target_n);
+    return policy.evaluate_leaf(node->state, target_n);
   }
 
   // Expansion: if first visit, initialize children
   if (node->N == 0) {
-    compute_policy_priors_uniform(node, actions);
+    policy.compute_priors(node, actions);
     for (int a : actions) {
       auto child = std::make_unique<MCTSNode>(ub);
       child->state = node->state;
@@ -147,7 +172,7 @@ double simulate(MCTSNode* node, int target_n, int ub, double c_puct, RNG& rng) {
   }
 
   // Recursion
-  double value = simulate(node->children[action].get(), target_n, ub, c_puct, rng);
+  double value = simulate_impl(node->children[action].get(), target_n, ub, c_puct, policy, rng);
 
   // Backpropagation
   node->N++;
@@ -156,47 +181,17 @@ double simulate(MCTSNode* node, int target_n, int ub, double c_puct, RNG& rng) {
   return value;
 }
 
+// NOTE: recursive MCTS simulation (heuristic version)
+double simulate(MCTSNode* node, int target_n, int ub, double c_puct, RNG& rng) {
+  HeuristicPolicy policy;
+  return simulate_impl(node, target_n, ub, c_puct, policy, rng);
+}
+
 // NOTE: recursive MCTS simulation with neural network
 double simulate_nn(MCTSNode* node, int target_n, int ub, double c_puct, nn::GolombNet* network,
                    RNG& rng) {
-  // Terminal check
-  if (static_cast<int>(node->state.marks.size()) >= target_n) {
-    node->is_terminal = true;
-    return evaluate_leaf_nn(node->state, target_n, network);
-  }
-
-  std::vector<int> actions = get_legal_actions(node->state, ub);
-  if (actions.empty()) {
-    node->is_terminal = true;
-    return evaluate_leaf_nn(node->state, target_n, network);
-  }
-
-  // Expansion: if first visit, initialize children with network policy
-  if (node->N == 0) {
-    compute_policy_priors_nn(node, actions, network);
-    for (int a : actions) {
-      auto child = std::make_unique<MCTSNode>(ub);
-      child->state = node->state;
-      try_add(child->state, a);
-      node->children[a] = std::move(child);
-    }
-  }
-
-  // Selection
-  int action = select_action_puct(node, c_puct);
-  if (action == -1 || !node->children.count(action)) {
-    // Fallback: random action
-    action = actions[rng.uniform_int(0, static_cast<int>(actions.size()) - 1)];
-  }
-
-  // Recursion
-  double value = simulate_nn(node->children[action].get(), target_n, ub, c_puct, network, rng);
-
-  // Backpropagation
-  node->N++;
-  node->W += value;
-
-  return value;
+  NNPolicy policy{network};
+  return simulate_impl(node, target_n, ub, c_puct, policy, rng);
 }
 
 // NOTE: extract best complete ruler from tree

@@ -4,6 +4,39 @@
 namespace golomb {
 namespace nn {
 
+namespace {
+
+// Helper: collect tensors from all layers using a member function pointer
+template<typename MemberFunc>
+std::vector<Tensor*> collect_from_all_layers(Linear& hidden1, Linear& hidden2, Linear& policy_head,
+                                              Linear& value_head, MemberFunc func) {
+  std::vector<Tensor*> result;
+
+  auto append_from = [&](Linear& layer) {
+    auto items = (layer.*func)();
+    result.insert(result.end(), items.begin(), items.end());
+  };
+
+  append_from(hidden1);
+  append_from(hidden2);
+  append_from(policy_head);
+  append_from(value_head);
+
+  return result;
+}
+
+// Helper: apply a void function to all layers
+template<typename MemberFunc>
+void apply_to_all_layers(Linear& hidden1, Linear& hidden2, Linear& policy_head, Linear& value_head,
+                         MemberFunc func) {
+  (hidden1.*func)();
+  (hidden2.*func)();
+  (policy_head.*func)();
+  (value_head.*func)();
+}
+
+} // namespace
+
 GolombNet::GolombNet(const StateEncoder& encoder, int ub, size_t hidden1_size, size_t hidden2_size)
     : encoder_(encoder), ub_(ub), hidden1_(encoder.encoding_size(), hidden1_size),
       hidden2_(hidden1_size, hidden2_size), policy_head_(hidden2_size, static_cast<size_t>(ub + 1)),
@@ -97,42 +130,16 @@ void GolombNet::backward(const Tensor& grad_policy, double grad_value) {
 }
 
 std::vector<Tensor*> GolombNet::parameters() {
-  std::vector<Tensor*> params;
-
-  auto h1_params = hidden1_.parameters();
-  auto h2_params = hidden2_.parameters();
-  auto policy_params = policy_head_.parameters();
-  auto value_params = value_head_.parameters();
-
-  params.insert(params.end(), h1_params.begin(), h1_params.end());
-  params.insert(params.end(), h2_params.begin(), h2_params.end());
-  params.insert(params.end(), policy_params.begin(), policy_params.end());
-  params.insert(params.end(), value_params.begin(), value_params.end());
-
-  return params;
+  return collect_from_all_layers(hidden1_, hidden2_, policy_head_, value_head_,
+                                  &Linear::parameters);
 }
 
 std::vector<Tensor*> GolombNet::gradients() {
-  std::vector<Tensor*> grads;
-
-  auto h1_grads = hidden1_.gradients();
-  auto h2_grads = hidden2_.gradients();
-  auto policy_grads = policy_head_.gradients();
-  auto value_grads = value_head_.gradients();
-
-  grads.insert(grads.end(), h1_grads.begin(), h1_grads.end());
-  grads.insert(grads.end(), h2_grads.begin(), h2_grads.end());
-  grads.insert(grads.end(), policy_grads.begin(), policy_grads.end());
-  grads.insert(grads.end(), value_grads.begin(), value_grads.end());
-
-  return grads;
+  return collect_from_all_layers(hidden1_, hidden2_, policy_head_, value_head_, &Linear::gradients);
 }
 
 void GolombNet::zero_grad() {
-  hidden1_.zero_grad();
-  hidden2_.zero_grad();
-  policy_head_.zero_grad();
-  value_head_.zero_grad();
+  apply_to_all_layers(hidden1_, hidden2_, policy_head_, value_head_, &Linear::zero_grad);
 }
 
 size_t GolombNet::num_parameters() const {
@@ -141,17 +148,11 @@ size_t GolombNet::num_parameters() const {
 }
 
 void GolombNet::init_he() {
-  hidden1_.init_he();
-  hidden2_.init_he();
-  policy_head_.init_he();
-  value_head_.init_he();
+  apply_to_all_layers(hidden1_, hidden2_, policy_head_, value_head_, &Linear::init_he);
 }
 
 void GolombNet::init_xavier() {
-  hidden1_.init_xavier();
-  hidden2_.init_xavier();
-  policy_head_.init_xavier();
-  value_head_.init_xavier();
+  apply_to_all_layers(hidden1_, hidden2_, policy_head_, value_head_, &Linear::init_xavier);
 }
 
 } // namespace nn
