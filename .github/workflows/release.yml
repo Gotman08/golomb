@@ -76,6 +76,20 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y cmake g++
 
+      - name: Install OR-Tools
+        if: steps.verify.outputs.should_release == 'true'
+        run: |
+          # Download OR-Tools binary release for Ubuntu
+          ORTOOLS_VERSION="9.10.4067"
+          ORTOOLS_URL="https://github.com/google/or-tools/releases/download/v9.10/or-tools_amd64_ubuntu-24.04_cpp_v${ORTOOLS_VERSION}.tar.gz"
+
+          wget -q "${ORTOOLS_URL}" -O ortools.tar.gz
+          sudo mkdir -p /opt/or-tools
+          sudo tar -xzf ortools.tar.gz -C /opt/or-tools --strip-components=1
+
+          # Add to CMAKE_PREFIX_PATH
+          echo "CMAKE_PREFIX_PATH=/opt/or-tools:${CMAKE_PREFIX_PATH}" >> $GITHUB_ENV
+
       - name: Build Linux binary (Release)
         if: steps.verify.outputs.should_release == 'true'
         run: |
