@@ -8,13 +8,13 @@ namespace golomb {
 
 using operations_research::Domain;
 using operations_research::sat::CpModelBuilder;
-using operations_research::sat::CpSolver;
 using operations_research::sat::CpSolverResponse;
 using operations_research::sat::CpSolverStatus;
 using operations_research::sat::IntVar;
 using operations_research::sat::LinearExpr;
 using operations_research::sat::SatParameters;
 using operations_research::sat::SolutionIntegerValue;
+using operations_research::sat::SolveWithParameters;
 
 /**
  * @brief Solve Golomb ruler exactly using OR-Tools CP-SAT.
@@ -121,8 +121,7 @@ ExactResult solve_exact_cpsat(const ExactOptions& opts) {
   params.set_symmetry_level(2);
 
   // 10. Solve the model
-  CpSolver solver;
-  CpSolverResponse response = solver.SolveWithParameters(model.Build(), params);
+  CpSolverResponse response = SolveWithParameters(model.Build(), params);
 
   // 11. Extract results based on solver status
   CpSolverStatus status = response.status();
