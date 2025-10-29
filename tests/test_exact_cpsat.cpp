@@ -204,8 +204,8 @@ TEST_CASE("CP-SAT message indicates status", "[exact][cpsat]") {
     ExactResult res = solve_exact_cpsat(opts);
 
     if (!res.optimal && !res.rule.empty()) {
-      REQUIRE(res.message.find("feasible") != std::string::npos ||
-              res.message.find("timeout") != std::string::npos);
+      REQUIRE((res.message.find("feasible") != std::string::npos ||
+               res.message.find("timeout") != std::string::npos));
     }
   }
 
