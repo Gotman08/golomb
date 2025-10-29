@@ -53,7 +53,7 @@ std::vector<int> crossover(const std::vector<int>& p1, const std::vector<int>& p
   return child;
 }
 
-} // namespace
+}  // namespace
 
 std::vector<int> evolutionary_search(int n, int ub, int pop, int iters) {
   RNG rng;
@@ -111,4 +111,4 @@ std::vector<int> evolutionary_search(int n, int ub, int pop, int iters) {
   return hill_climb(best, ub, LOCAL_SEARCH_BUDGET);
 }
 
-} // namespace golomb
+}  // namespace golomb
