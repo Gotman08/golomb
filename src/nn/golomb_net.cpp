@@ -8,9 +8,8 @@ namespace {
 
 // Helper: collect tensors from all layers using a member function pointer
 template <typename MemberFunc>
-std::vector<Tensor*> collect_from_all_layers(Linear& hidden1, Linear& hidden2,
-                                              Linear& policy_head, Linear& value_head,
-                                              MemberFunc func) {
+std::vector<Tensor*> collect_from_all_layers(Linear& hidden1, Linear& hidden2, Linear& policy_head,
+                                              Linear& value_head, MemberFunc func) {
   std::vector<Tensor*> result;
 
   auto append_from = [&](Linear& layer) {
@@ -28,8 +27,8 @@ std::vector<Tensor*> collect_from_all_layers(Linear& hidden1, Linear& hidden2,
 
 // Helper: apply a void function to all layers
 template <typename MemberFunc>
-void apply_to_all_layers(Linear& hidden1, Linear& hidden2, Linear& policy_head,
-                         Linear& value_head, MemberFunc func) {
+void apply_to_all_layers(Linear& hidden1, Linear& hidden2, Linear& policy_head, Linear& value_head,
+                         MemberFunc func) {
   (hidden1.*func)();
   (hidden2.*func)();
   (policy_head.*func)();
