@@ -138,7 +138,7 @@ struct NNPolicy {
 };
 
 // NOTE: Generic MCTS simulation - unified implementation
-template<typename Policy>
+template <typename Policy>
 double simulate_impl(MCTSNode* node, int target_n, int ub, double c_puct, const Policy& policy,
                      RNG& rng) {
   // Terminal check

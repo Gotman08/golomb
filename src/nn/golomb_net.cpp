@@ -7,9 +7,10 @@ namespace nn {
 namespace {
 
 // Helper: collect tensors from all layers using a member function pointer
-template<typename MemberFunc>
-std::vector<Tensor*> collect_from_all_layers(Linear& hidden1, Linear& hidden2, Linear& policy_head,
-                                              Linear& value_head, MemberFunc func) {
+template <typename MemberFunc>
+std::vector<Tensor*> collect_from_all_layers(Linear& hidden1, Linear& hidden2,
+                                              Linear& policy_head, Linear& value_head,
+                                              MemberFunc func) {
   std::vector<Tensor*> result;
 
   auto append_from = [&](Linear& layer) {
@@ -26,9 +27,9 @@ std::vector<Tensor*> collect_from_all_layers(Linear& hidden1, Linear& hidden2, L
 }
 
 // Helper: apply a void function to all layers
-template<typename MemberFunc>
-void apply_to_all_layers(Linear& hidden1, Linear& hidden2, Linear& policy_head, Linear& value_head,
-                         MemberFunc func) {
+template <typename MemberFunc>
+void apply_to_all_layers(Linear& hidden1, Linear& hidden2, Linear& policy_head,
+                         Linear& value_head, MemberFunc func) {
   (hidden1.*func)();
   (hidden2.*func)();
   (policy_head.*func)();
@@ -135,7 +136,8 @@ std::vector<Tensor*> GolombNet::parameters() {
 }
 
 std::vector<Tensor*> GolombNet::gradients() {
-  return collect_from_all_layers(hidden1_, hidden2_, policy_head_, value_head_, &Linear::gradients);
+  return collect_from_all_layers(hidden1_, hidden2_, policy_head_, value_head_,
+                                  &Linear::gradients);
 }
 
 void GolombNet::zero_grad() {
