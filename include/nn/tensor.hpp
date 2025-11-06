@@ -54,6 +54,19 @@ public:
   Tensor(std::initializer_list<double> values);
 
   /**
+   * @brief Move constructor (OPT-4A: CSAPP 9.9 - Efficient resource transfer).
+   * @param other Tensor to move from.
+   */
+  Tensor(Tensor&& other) noexcept;
+
+  /**
+   * @brief Move assignment operator (OPT-4A: CSAPP 9.9 - Efficient resource transfer).
+   * @param other Tensor to move from.
+   * @return Reference to this tensor.
+   */
+  Tensor& operator=(Tensor&& other) noexcept;
+
+  /**
    * @brief Get the shape of the tensor.
    * @return Vector containing dimensions.
    */

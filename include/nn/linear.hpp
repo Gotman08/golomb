@@ -132,8 +132,9 @@ private:
   Tensor grad_weight_; ///< Gradient w.r.t. weight.
   Tensor grad_bias_;   ///< Gradient w.r.t. bias (optional).
 
-  // Cached for backward pass
-  std::optional<Tensor> cached_input_; ///< Cached input from forward pass.
+  // OPT-4B: Cache pointer instead of copy (CSAPP 9.9 - Eliminate allocations)
+  // SAFETY: Input must remain valid until backward() completes
+  const Tensor* cached_input_ = nullptr; ///< Cached input pointer from forward pass.
 };
 
 } // namespace nn

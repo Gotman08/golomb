@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/golomb.hpp"
+#include <atomic>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -19,17 +20,27 @@ class GolombNet;
  * Each node tracks visit count (N), total value (W), and prior probabilities (P).
  * Virtual loss is used for parallel MCTS to prevent multiple threads from exploring
  * the same path simultaneously.
+ *
+ * OPT-3B: Cache-line alignment and atomics to prevent false sharing (CSAPP 6.6)
  */
 struct MCTSNode {
   RuleState state;                                             ///< Current partial ruler state.
   std::unordered_map<int, std::unique_ptr<MCTSNode>> children; ///< Child nodes by action.
-  int N = 0;                                                   ///< Visit count.
-  double W = 0.0;                                              ///< Total value accumulated.
-  double virtual_loss = 0.0;                                   ///< Virtual loss for parallel MCTS.
-  std::unordered_map<int, double> P;                           ///< Prior probabilities per action.
-  bool is_terminal = false; ///< Whether state is complete/dead-end.
 
-  explicit MCTSNode(int max_dist) : state(max_dist) {}
+  // OPT-3B: Atomic counters on separate cache lines to prevent false sharing (CSAPP 6.6)
+  // Cache line = 64 bytes, ensure these hot variables don't share lines with other data
+  alignas(64) std::atomic<int> N;                              ///< Visit count (atomic for parallel access).
+  alignas(64) std::atomic<double> W;                           ///< Total value accumulated (atomic).
+  alignas(64) std::atomic<double> virtual_loss;                ///< Virtual loss for parallel MCTS (atomic).
+
+  std::unordered_map<int, double> P;                           ///< Prior probabilities per action.
+  bool is_terminal = false;                                    ///< Whether state is complete/dead-end.
+
+  // OPT-2B: Cache legal actions to avoid recomputation (CSAPP 5.8 - Memory Performance)
+  std::vector<int> cached_legal_actions;                       ///< Cached legal actions for this state.
+  bool actions_cached = false;                                 ///< Whether legal actions have been computed.
+
+  explicit MCTSNode(int max_dist) : state(max_dist), N(0), W(0.0), virtual_loss(0.0) {}
 };
 
 /**

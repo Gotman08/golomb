@@ -11,6 +11,7 @@
 #include <mutex>
 #include <sstream>
 #include <thread>
+#include <unordered_set>
 #include <vector>
 
 namespace golomb {
@@ -26,11 +27,17 @@ constexpr double PW_C = 1.5;    // Constant multiplier for progressive widening
 constexpr double PW_ALPHA = 0.5; // Exponent for progressive widening (sqrt)
 
 // NOTE: get legal actions (positions that can be added without conflicts)
+// OPT-2A: Use unordered_set instead of std::find for O(1) lookup (CSAPP 5.2)
 std::vector<int> get_legal_actions(const RuleState& st, int ub) {
+  // Create set of placed marks once (O(n) instead of O(n*ub))
+  std::unordered_set<int> placed(st.marks.begin(), st.marks.end());
+
   std::vector<int> actions;
+  actions.reserve(ub / 2);  // Estimate to reduce reallocations
+
   for (int p = 1; p < ub; ++p) {
-    // Skip if already placed
-    if (std::find(st.marks.begin(), st.marks.end(), p) != st.marks.end()) {
+    // O(1) lookup instead of O(n) find
+    if (placed.count(p)) {
       continue;
     }
     if (st.used.can_add_mark(st.marks, p)) {
@@ -38,6 +45,15 @@ std::vector<int> get_legal_actions(const RuleState& st, int ub) {
     }
   }
   return actions;
+}
+
+// OPT-2B: Get cached legal actions (avoids recomputation on revisits - CSAPP 5.8)
+const std::vector<int>& get_cached_legal_actions(MCTSNode* node, int ub) {
+  if (!node->actions_cached) {
+    node->cached_legal_actions = get_legal_actions(node->state, ub);
+    node->actions_cached = true;
+  }
+  return node->cached_legal_actions;
 }
 
 // Calculate maximum number of children to expand using progressive widening
@@ -222,7 +238,7 @@ double simulate_impl(MCTSNode* node, int target_n, int ub, double c_puct, const 
     return policy.evaluate_leaf(node->state, target_n);
   }
 
-  std::vector<int> actions = get_legal_actions(node->state, ub);
+  const std::vector<int>& actions = get_cached_legal_actions(node, ub);
   if (actions.empty()) {
     node->is_terminal = true;
     return policy.evaluate_leaf(node->state, target_n);
@@ -249,9 +265,9 @@ double simulate_impl(MCTSNode* node, int target_n, int ub, double c_puct, const 
   // Recursion
   double value = simulate_impl(node->children[action].get(), target_n, ub, c_puct, policy, rng);
 
-  // Backpropagation
-  node->N++;
-  node->W += value;
+  // Backpropagation (OPT-3B: atomic operations for thread-safety)
+  node->N.fetch_add(1, std::memory_order_relaxed);
+  node->W.fetch_add(value, std::memory_order_relaxed);
 
   return value;
 }
@@ -274,7 +290,7 @@ double simulate_pw_impl(MCTSNode* node, int target_n, int ub, double c_puct, con
     return policy.evaluate_leaf(node->state, target_n);
   }
 
-  std::vector<int> actions = get_legal_actions(node->state, ub);
+  const std::vector<int>& actions = get_cached_legal_actions(node, ub);
   if (actions.empty()) {
     node->is_terminal = true;
     return policy.evaluate_leaf(node->state, target_n);
@@ -341,9 +357,9 @@ double simulate_pw_impl(MCTSNode* node, int target_n, int ub, double c_puct, con
   // Recursion
   double value = simulate_pw_impl(node->children[action].get(), target_n, ub, c_puct, policy, rng);
 
-  // Backpropagation
-  node->N++;
-  node->W += value;
+  // Backpropagation (OPT-3B: atomic operations for thread-safety)
+  node->N.fetch_add(1, std::memory_order_relaxed);
+  node->W.fetch_add(value, std::memory_order_relaxed);
 
   return value;
 }
@@ -403,7 +419,7 @@ double simulate_parallel_impl(MCTSNode* node, int target_n, int ub, double c_puc
     return policy.evaluate_leaf(node->state, target_n);
   }
 
-  std::vector<int> actions = get_legal_actions(node->state, ub);
+  const std::vector<int>& actions = get_cached_legal_actions(node, ub);
   if (actions.empty()) {
     node->is_terminal = true;
     return policy.evaluate_leaf(node->state, target_n);
@@ -429,8 +445,8 @@ double simulate_parallel_impl(MCTSNode* node, int target_n, int ub, double c_puc
 
   MCTSNode* child = node->children[action].get();
 
-  // Apply virtual loss to discourage other threads
-  child->virtual_loss += vloss_penalty;
+  // OPT-3B: Apply virtual loss to discourage other threads (atomic operation)
+  child->virtual_loss.fetch_add(vloss_penalty, std::memory_order_relaxed);
 
   // Unlock before recursion to allow other threads to work
   lock.unlock();
@@ -442,10 +458,10 @@ double simulate_parallel_impl(MCTSNode* node, int target_n, int ub, double c_puc
   // Relock for backpropagation
   lock.lock();
 
-  // Remove virtual loss and backpropagate
-  child->virtual_loss -= vloss_penalty;
-  node->N++;
-  node->W += value;
+  // OPT-3B: Remove virtual loss and backpropagate (atomic operations)
+  child->virtual_loss.fetch_sub(vloss_penalty, std::memory_order_relaxed);
+  node->N.fetch_add(1, std::memory_order_relaxed);
+  node->W.fetch_add(value, std::memory_order_relaxed);
 
   return value;
 }

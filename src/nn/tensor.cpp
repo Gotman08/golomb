@@ -43,67 +43,94 @@ Tensor::Tensor(std::initializer_list<double> values) : shape_({values.size()}) {
   data_.assign(values.begin(), values.end());
 }
 
+// OPT-4A: Move constructor - efficient transfer of ownership (CSAPP 9.9)
+Tensor::Tensor(Tensor&& other) noexcept
+    : data_(std::move(other.data_)), shape_(std::move(other.shape_)) {
+  // other is left in valid but unspecified state
+}
+
+// OPT-4A: Move assignment - efficient transfer of ownership (CSAPP 9.9)
+Tensor& Tensor::operator=(Tensor&& other) noexcept {
+  if (this != &other) {
+    data_ = std::move(other.data_);
+    shape_ = std::move(other.shape_);
+  }
+  return *this;
+}
+
 // ============================================================================
 // Element Access
 // ============================================================================
 
 double& Tensor::operator()(size_t i) {
+#ifndef NDEBUG
   if (ndim() != 1) {
     throw std::runtime_error("1D access requires 1D tensor");
   }
   if (i >= shape_[0]) {
     throw std::out_of_range("Index out of bounds");
   }
+#endif
   return data_[i];
 }
 
 const double& Tensor::operator()(size_t i) const {
+#ifndef NDEBUG
   if (ndim() != 1) {
     throw std::runtime_error("1D access requires 1D tensor");
   }
   if (i >= shape_[0]) {
     throw std::out_of_range("Index out of bounds");
   }
+#endif
   return data_[i];
 }
 
 double& Tensor::operator()(size_t i, size_t j) {
+#ifndef NDEBUG
   if (ndim() != 2) {
     throw std::runtime_error("2D access requires 2D tensor");
   }
   if (i >= shape_[0] || j >= shape_[1]) {
     throw std::out_of_range("Index out of bounds");
   }
+#endif
   return data_[i * shape_[1] + j];
 }
 
 const double& Tensor::operator()(size_t i, size_t j) const {
+#ifndef NDEBUG
   if (ndim() != 2) {
     throw std::runtime_error("2D access requires 2D tensor");
   }
   if (i >= shape_[0] || j >= shape_[1]) {
     throw std::out_of_range("Index out of bounds");
   }
+#endif
   return data_[i * shape_[1] + j];
 }
 
 double& Tensor::operator()(size_t i, size_t j, size_t k) {
+#ifndef NDEBUG
   if (ndim() != 3) {
     throw std::runtime_error("3D access requires 3D tensor");
   }
   if (i >= shape_[0] || j >= shape_[1] || k >= shape_[2]) {
     throw std::out_of_range("Index out of bounds");
   }
+#endif
   return data_[(i * shape_[1] + j) * shape_[2] + k];
 }
 
 const double& Tensor::operator()(size_t i, size_t j, size_t k) const {
+#ifndef NDEBUG
   if (ndim() != 3) {
     throw std::runtime_error("3D access requires 3D tensor");
   }
   if (i >= shape_[0] || j >= shape_[1] || k >= shape_[2]) {
     throw std::out_of_range("Index out of bounds");
   }
+#endif
   return data_[(i * shape_[1] + j) * shape_[2] + k];
 }
 
@@ -192,30 +219,43 @@ void Tensor::check_same_shape(const Tensor& other) const {
   }
 }
 
+// OPT-1B: Eliminate copy() - construct result directly (CSAPP 9.9)
 Tensor Tensor::operator+(const Tensor& other) const {
   check_same_shape(other);
-  Tensor result = copy();
-  result += other;
+  Tensor result(shape_);
+  const size_t n = data_.size();
+  for (size_t i = 0; i < n; ++i) {
+    result.data_[i] = data_[i] + other.data_[i];
+  }
   return result;
 }
 
 Tensor Tensor::operator-(const Tensor& other) const {
   check_same_shape(other);
-  Tensor result = copy();
-  result -= other;
+  Tensor result(shape_);
+  const size_t n = data_.size();
+  for (size_t i = 0; i < n; ++i) {
+    result.data_[i] = data_[i] - other.data_[i];
+  }
   return result;
 }
 
 Tensor Tensor::operator*(const Tensor& other) const {
   check_same_shape(other);
-  Tensor result = copy();
-  result *= other;
+  Tensor result(shape_);
+  const size_t n = data_.size();
+  for (size_t i = 0; i < n; ++i) {
+    result.data_[i] = data_[i] * other.data_[i];
+  }
   return result;
 }
 
 Tensor Tensor::operator*(double scalar) const {
-  Tensor result = copy();
-  result *= scalar;
+  Tensor result(shape_);
+  const size_t n = data_.size();
+  for (size_t i = 0; i < n; ++i) {
+    result.data_[i] = data_[i] * scalar;
+  }
   return result;
 }
 
@@ -223,9 +263,11 @@ Tensor Tensor::operator/(double scalar) const {
   if (scalar == 0.0) {
     throw std::invalid_argument("Division by zero");
   }
-  Tensor result = copy();
-  for (auto& val : result.data_) {
-    val /= scalar;
+  Tensor result(shape_);
+  const size_t n = data_.size();
+  const double inv_scalar = 1.0 / scalar;  // Multiply is faster than divide
+  for (size_t i = 0; i < n; ++i) {
+    result.data_[i] = data_[i] * inv_scalar;
   }
   return result;
 }
@@ -279,15 +321,39 @@ Tensor Tensor::matmul(const Tensor& other) const {
   }
 
   Tensor result(m, p);
+  result.zeros(); // Initialize to zero for accumulation
 
-  // NOTE: naive implementation - could be optimized with blocking/BLAS
-  for (size_t i = 0; i < m; ++i) {
-    for (size_t j = 0; j < p; ++j) {
-      double sum = 0.0;
-      for (size_t k = 0; k < n; ++k) {
-        sum += (*this)(i, k) * other(k, j);
+  // OPT-1A: Blocked i-k-j matrix multiplication (CSAPP 6.6 - Cache blocking)
+  // 64×64 blocks fit in L1 cache (64*64*8 bytes = 32KB < typical 32-64KB L1)
+  constexpr size_t BLOCK_SIZE = 64;
+
+  const double* a_data = data_.data();
+  const double* b_data = other.data_.data();
+  double* c_data = result.data_.data();
+
+  // Blocked outer loops
+  for (size_t ii = 0; ii < m; ii += BLOCK_SIZE) {
+    size_t i_end = std::min(ii + BLOCK_SIZE, m);
+
+    for (size_t kk = 0; kk < n; kk += BLOCK_SIZE) {
+      size_t k_end = std::min(kk + BLOCK_SIZE, n);
+
+      for (size_t jj = 0; jj < p; jj += BLOCK_SIZE) {
+        size_t j_end = std::min(jj + BLOCK_SIZE, p);
+
+        // Inner block computation with i-k-j order
+        for (size_t i = ii; i < i_end; ++i) {
+          for (size_t k = kk; k < k_end; ++k) {
+            // Hoist A[i,k] out of inner loop (key optimization!)
+            double a_ik = a_data[i * n + k];
+
+            // Vectorizable inner loop over columns of B
+            for (size_t j = jj; j < j_end; ++j) {
+              c_data[i * p + j] += a_ik * b_data[k * p + j];
+            }
+          }
+        }
       }
-      result(i, j) = sum;
     }
   }
 

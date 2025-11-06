@@ -49,10 +49,26 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT ortools_FOUND)
   add_link_options(-fsanitize=address -fsanitize=undefined)
 endif()
 
-# Release optimizations
+# Release optimizations (CSAPP Chapter 5: Aggressive optimization flags)
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  # Base optimization
   add_compile_options(-O3 -DNDEBUG)
   add_compile_definitions(NDEBUG)
+
+  # CPU-specific optimizations (march=native for AVX2/SSE)
+  add_compile_options(-march=native -mtune=native)
+
+  # Loop optimizations
+  add_compile_options(-funroll-loops)
+
+  # Fast math (trade precision for speed - acceptable for NN/MCTS)
+  add_compile_options(-ffast-math)
+
+  # Link-Time Optimization (cross-module inlining)
+  add_compile_options(-flto)
+  add_link_options(-flto)
+
+  message(STATUS "Release build with aggressive optimizations enabled")
 endif()
 
 # Export compile commands for clang-tidy
@@ -80,6 +96,7 @@ target_link_libraries(golomb_heur PUBLIC golomb_core)
 # MCTS library
 add_library(golomb_mcts
   src/mcts/mcts.cpp
+  src/mcts/node_pool.cpp
 )
 target_link_libraries(golomb_mcts PUBLIC golomb_core golomb_nn)
 

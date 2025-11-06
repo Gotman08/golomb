@@ -20,8 +20,8 @@ Linear::Linear(size_t in_features, size_t out_features, bool use_bias)
 }
 
 Tensor Linear::forward(const Tensor& input) {
-  // Cache input for backward pass
-  cached_input_ = input.copy();
+  // OPT-4B: Cache pointer instead of copy (CSAPP 9.9 - Eliminate allocations)
+  cached_input_ = &input;
 
   if (input.ndim() == 1) {
     // Single sample: input [in_features]
@@ -79,11 +79,11 @@ Tensor Linear::forward(const Tensor& input) {
 }
 
 Tensor Linear::backward(const Tensor& grad_output) {
-  if (!cached_input_.has_value()) {
+  if (cached_input_ == nullptr) {
     throw std::runtime_error("Linear::backward: must call forward() first");
   }
 
-  const Tensor& input = cached_input_.value();
+  const Tensor& input = *cached_input_;
 
   if (input.ndim() == 1) {
     // Single sample
