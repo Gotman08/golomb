@@ -102,8 +102,16 @@ add_library(golomb_nn
   src/nn/linear.cpp
   src/nn/state_encoder.cpp
   src/nn/golomb_net.cpp
+  src/nn/optimizer.cpp
 )
 target_link_libraries(golomb_nn PUBLIC golomb_core)
+
+# Training library
+add_library(golomb_training
+  src/training/self_play.cpp
+  src/training/trainer.cpp
+)
+target_link_libraries(golomb_training PUBLIC golomb_core golomb_mcts golomb_nn)
 
 # CLI executable
 add_executable(golomb_cli

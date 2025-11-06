@@ -71,28 +71,38 @@ The Golomb ruler optimization project is structured into four main layers:
 
 **Dependencies**: `core/`, `utils/random`
 
+**Implemented Features**:
+- ✅ Virtual loss for parallel tree search (`mcts_build_parallel`)
+- ✅ Progressive widening to focus on promising actions (`mcts_build_pw`)
+
 **Extension Points**:
 - TODO: Neural network for `policy_priors()` and `evaluate_leaf()`
-- TODO: Virtual loss for parallel tree search
-- TODO: Progressive widening to focus on promising actions
 - TODO: Graphviz export for tree visualization
 
 ### 4. Exact Layer (`exact/`)
 
 **Purpose**: Optimal solutions via constraint programming or integer linear programming.
 
-**Current Status**: Stub implementation returning greedy seed.
+**Current Status**: ✅ **Implemented** - OR-Tools CP-SAT solver with full constraint programming model.
 
 **Interface**:
 - `ExactOptions`: n, ub, timeout_ms
 - `ExactResult`: optimal flag, rule, bounds, status message
 
-**Future Implementations**:
-- TODO: OR-Tools CP-SAT model
-  - Variables: positions[i] ∈ [0, ub] with ordering constraints
-  - Constraints: AllDifferent on pairwise distances
-  - Objective: minimize positions[n-1]
+**Implementation Details**:
 
+**OR-Tools CP-SAT Model** (`exact_cpsat.cpp`):
+- **Variables**: marks[i] ∈ [0, ub] for i ∈ [0, n-1]
+- **Constraints**:
+  1. marks[0] = 0 (fixed first mark)
+  2. marks[i] < marks[i+1] (strictly increasing)
+  3. AllDifferent({marks[j] - marks[i] | 0 ≤ i < j < n})
+  4. Symmetry breaking: first_distance < last_distance
+  5. Implied lower bound: marks[n-1] ≥ n*(n-1)/2
+- **Objective**: Minimize marks[n-1]
+- **Performance**: Solves n≤8 optimally within reasonable time (<5min)
+
+**Future Extensions**:
 - TODO: ILP formulation
   - Binary variables: x[i,p] = 1 if mark i at position p
   - Distance variables: d[i,j] = |pos[i] - pos[j]|
@@ -103,7 +113,7 @@ The Golomb ruler optimization project is structured into four main layers:
   - Subproblem: verify distance uniqueness
   - Cuts: no-good cuts for invalid configurations
 
-**Dependencies**: `core/` (will require OR-Tools or similar)
+**Dependencies**: `core/`, OR-Tools (v9.10+)
 
 ### 5. CLI Layer (`cli/`)
 
@@ -192,12 +202,19 @@ Mode Selection
 4. Add model loading in `mcts_build()` initialization
 5. Consider GPU acceleration for batch inference
 
-### Adding Exact Solver
-1. Add OR-Tools to CMakeLists via CPM or find_package
-2. Implement CP-SAT model in `src/exact/exact_cpsat.cpp`
-3. Update `solve_exact_stub()` to call real solver
-4. Add timeout handling and incremental bounds
-5. Test on small instances (n=4-6) with known optima
+### Exact Solver (✅ Implemented)
+**Current Implementation** (CP-SAT):
+1. ✅ OR-Tools integrated in CMakeLists via CPM/find_package
+2. ✅ CP-SAT model implemented in `src/exact/exact_cpsat.cpp`
+3. ✅ CLI uses `solve_exact_cpsat()` for exact mode
+4. ✅ Timeout handling and bounds tracking included
+5. ✅ Comprehensive tests for n=3-8 with known optima
+
+**Future Enhancements**:
+- Implement ILP formulation with binary position variables
+- Add Benders decomposition for large instances (n≥10)
+- Experiment with different branching strategies
+- Add incremental solving for iterative deepening
 
 ## Maintenance Notes
 
