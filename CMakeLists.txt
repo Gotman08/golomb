@@ -93,6 +93,17 @@ add_library(golomb_heur
 )
 target_link_libraries(golomb_heur PUBLIC golomb_core)
 
+# Neural network library (defined before MCTS as MCTS depends on it)
+add_library(golomb_nn
+  src/nn/tensor.cpp
+  src/nn/activations.cpp
+  src/nn/linear.cpp
+  src/nn/state_encoder.cpp
+  src/nn/golomb_net.cpp
+  src/nn/optimizer.cpp
+)
+target_link_libraries(golomb_nn PUBLIC golomb_core)
+
 # MCTS library
 add_library(golomb_mcts
   src/mcts/mcts.cpp
@@ -111,17 +122,6 @@ target_link_libraries(golomb_exact
   PRIVATE
     ortools::ortools
 )
-
-# Neural network library
-add_library(golomb_nn
-  src/nn/tensor.cpp
-  src/nn/activations.cpp
-  src/nn/linear.cpp
-  src/nn/state_encoder.cpp
-  src/nn/golomb_net.cpp
-  src/nn/optimizer.cpp
-)
-target_link_libraries(golomb_nn PUBLIC golomb_core)
 
 # Training library
 add_library(golomb_training

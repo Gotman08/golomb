@@ -69,10 +69,17 @@ jobs:
           path: |
             build/_deps
             ~/.cache/CPM
-          key: ${{ runner.os }}-cpm-release-${{ hashFiles('**/CMakeLists.txt') }}
+          key: ${{ runner.os }}-cpm-release-${{ hashFiles('**/CMakeLists.txt', 'cmake/CPM.cmake') }}
           restore-keys: |
             ${{ runner.os }}-cpm-release-
             ${{ runner.os }}-cpm-
+
+      - name: Cache OR-Tools
+        id: cache-ortools
+        uses: actions/cache@v4
+        with:
+          path: /opt/or-tools
+          key: ${{ runner.os }}-ortools-${{ env.ORTOOLS_VERSION }}
 
       - name: Install dependencies
         if: steps.verify.outputs.should_release == 'true'
@@ -81,7 +88,7 @@ jobs:
           sudo apt-get install -y cmake g++
 
       - name: Install OR-Tools
-        if: steps.verify.outputs.should_release == 'true'
+        if: steps.verify.outputs.should_release == 'true' && steps.cache-ortools.outputs.cache-hit != 'true'
         run: |
           # Download OR-Tools binary release for Ubuntu
           ORTOOLS_URL="${{ env.ORTOOLS_BASE_URL }}/or-tools_amd64_ubuntu-24.04_cpp_v${{ env.ORTOOLS_VERSION }}.tar.gz"
@@ -90,6 +97,9 @@ jobs:
           sudo mkdir -p /opt/or-tools
           sudo tar -xzf ortools.tar.gz -C /opt/or-tools --strip-components=1
 
+      - name: Set OR-Tools environment
+        if: steps.verify.outputs.should_release == 'true'
+        run: |
           # Add to CMAKE_PREFIX_PATH
           echo "CMAKE_PREFIX_PATH=/opt/or-tools:${CMAKE_PREFIX_PATH}" >> $GITHUB_ENV
 

@@ -7,6 +7,10 @@ on:
     branches: [master]
   workflow_dispatch:
 
+env:
+  ORTOOLS_VERSION: "9.10.4067"
+  ORTOOLS_BASE_URL: "https://github.com/google/or-tools/releases/download/v9.10"
+
 permissions:
   contents: write
   pull-requests: write
@@ -26,19 +30,41 @@ jobs:
           path: |
             build/_deps
             ~/.cache/CPM
-          key: ${{ runner.os }}-cpm-benchmark-${{ hashFiles('**/CMakeLists.txt') }}
+          key: ${{ runner.os }}-cpm-benchmark-${{ hashFiles('**/CMakeLists.txt', 'cmake/CPM.cmake') }}
           restore-keys: |
             ${{ runner.os }}-cpm-benchmark-
             ${{ runner.os }}-cpm-
+
+      - name: Cache OR-Tools
+        id: cache-ortools
+        uses: actions/cache@v4
+        with:
+          path: /opt/or-tools
+          key: ${{ runner.os }}-ortools-${{ env.ORTOOLS_VERSION }}
 
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake g++ python3
 
+      - name: Install OR-Tools
+        if: steps.cache-ortools.outputs.cache-hit != 'true'
+        run: |
+          # Download OR-Tools binary release for Ubuntu
+          ORTOOLS_URL="${{ env.ORTOOLS_BASE_URL }}/or-tools_amd64_ubuntu-24.04_cpp_v${{ env.ORTOOLS_VERSION }}.tar.gz"
+
+          wget -q "${ORTOOLS_URL}" -O ortools.tar.gz
+          sudo mkdir -p /opt/or-tools
+          sudo tar -xzf ortools.tar.gz -C /opt/or-tools --strip-components=1
+
+      - name: Set OR-Tools environment
+        run: |
+          # Add to CMAKE_PREFIX_PATH
+          echo "CMAKE_PREFIX_PATH=/opt/or-tools:${CMAKE_PREFIX_PATH}" >> $GITHUB_ENV
+
       - name: Configure CMake (Release build for accurate benchmarks)
         run: |
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_BENCHMARKS=ON
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_BENCHMARKS=ON -DBUILD_TESTING=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
       - name: Build benchmarks
         run: cmake --build build --config Release --target golomb_benchmarks -j
@@ -63,6 +89,13 @@ jobs:
         run: |
           mkdir -p gh-pages/benchmarks
 
+      - name: Validate benchmark results exist
+        run: |
+          if [ ! -f "benchmark_results.json" ]; then
+            echo "Error: benchmark_results.json not found!"
+            exit 1
+          fi
+
       - name: Compare with previous benchmarks
         id: compare
         run: |
@@ -75,7 +108,6 @@ jobs:
             python3 scripts/compare_benchmarks.py benchmark_results.json > benchmark_comparison.md
             echo "comparison_available=false" >> $GITHUB_OUTPUT
           fi
-        continue-on-error: true
 
       - name: Store benchmark results in history
         if: github.ref == 'refs/heads/master'
@@ -99,8 +131,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add benchmarks/
-          git commit -m "chore: update benchmark history for ${{ github.sha }}" || echo "No changes to commit"
-          git push origin gh-pages
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update benchmark history for ${{ github.sha }}"
+            git push origin gh-pages
+          fi
 
       - name: Comment PR with benchmark results
         if: github.event_name == 'pull_request' && steps.compare.outputs.comparison_available == 'true'
@@ -126,6 +162,6 @@ jobs:
       - name: Check for performance regressions
         run: |
           if grep -q "REGRESSION" benchmark_comparison.md; then
-            echo "::warning::Performance regressions detected! See benchmark comparison report."
-            # Don't fail the build, just warn
+            echo "::error::Performance regressions detected! See benchmark comparison report."
+            exit 1
           fi
